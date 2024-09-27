@@ -1,0 +1,53 @@
+.container {
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+.left,
+.right {
+    flex: 1;
+    padding: 20px;
+}
+
+.left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.titleSmall {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.titleName {
+    font-weight: bold;
+    color: #0072bc ;
+}
+
+.imageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.imageContainer img {
+    max-width: 100%;
+    height: auto;
+}
