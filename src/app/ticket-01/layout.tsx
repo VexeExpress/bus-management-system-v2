@@ -7,7 +7,6 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -16,8 +15,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import { Collapse } from '@mui/material';
-import { ExpandLess, ExpandMore, ConfirmationNumber, PanTool, Widgets, EditNote, Camera, Leaderboard  } from '@mui/icons-material';
+import { Badge, Collapse, InputBase, Paper } from '@mui/material';
+import { ExpandLess, ExpandMore, ConfirmationNumber, PanTool, Widgets, EditNote, Camera, Leaderboard, AccountCircle, Search, Notifications, Airplay } from '@mui/icons-material';
 
 const drawerWidth = 260;
 
@@ -109,7 +108,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleDrawerOpen = () => {
         setOpen(true);
-        
+
     };
 
     const handleDrawerClose = () => {
@@ -133,6 +132,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleClick2 = () => {
         setOpen2(!open2);
+        setOpen(true);
         setOpen3(false);
         setOpen4(false);
         setOpen5(false);
@@ -143,6 +143,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleClick3 = () => {
         setOpen3(!open3);
+        setOpen(true);
         setOpen2(false);
         setOpen4(false);
         setOpen5(false);
@@ -153,6 +154,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleClick4 = () => {
         setOpen4(!open4);
+        setOpen(true);
         setOpen2(false);
         setOpen3(false);
         setOpen5(false);
@@ -163,6 +165,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleClick5 = () => {
         setOpen5(!open5);
+        setOpen(true);
         setOpen2(false);
         setOpen3(false);
         setOpen4(false);
@@ -173,6 +176,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleClick6 = () => {
         setOpen6(!open6);
+        setOpen(true);
         setOpen2(false);
         setOpen3(false);
         setOpen4(false);
@@ -183,6 +187,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleClick7 = () => {
         setOpen7(!open7);
+        setOpen(true);
         setOpen2(false);
         setOpen3(false);
         setOpen4(false);
@@ -193,6 +198,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     const handleClick8 = () => {
         setOpen8(!open8);
+        setOpen(true);
         setOpen2(false);
         setOpen3(false);
         setOpen4(false);
@@ -200,6 +206,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         setOpen6(false);
         setOpen7(false);
     };
+
+
+  
 
 
     return (
@@ -221,9 +230,40 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">
-                        VexeExpress
-                    </Typography>
+
+                    <Paper
+                        component="form"
+                        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 350, borderRadius: 20, height: 40, backgroundColor: '#f1f1f1', boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.23)' }}
+                    >
+                        <IconButton sx={{ p: '10px' }} aria-label="menu">
+                            <Search />
+                        </IconButton>
+                        <InputBase
+                            sx={{ ml: 1, flex: 1 }}
+                            placeholder="Tìm kiếm theo SĐT"
+                        />
+                    </Paper>
+                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        <div style={{ paddingRight: 10 }}>
+                            <span>Đặng Tuấn Thành</span>
+                        </div>
+                        <div style={{ marginLeft: 10, backgroundColor: '#339900', borderRadius: 5, padding: 5 }}>
+                            <span>TK: 5.000.000 đ</span>
+                        </div>
+                        <Badge badgeContent={4} color="secondary" style={{ marginRight: 10, marginLeft: 20 }}>
+                            <Notifications />
+                        </Badge>
+                        <IconButton color="inherit" aria-label="account">
+                            <Airplay  />
+                        </IconButton>
+                        <IconButton color="inherit" aria-label="system">
+                            <AccountCircle />
+                        </IconButton>
+                        
+                   
+                            
+                  
+                    </Box>
                 </Toolbar>
             </AppBar>
 
@@ -238,7 +278,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     <ListItemButton onClick={handleClick2} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <ListItemIcon>
-                                <ConfirmationNumber  />
+                                <ConfirmationNumber />
                             </ListItemIcon>
                             <span>Hành khách</span>
                         </div>
@@ -284,7 +324,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     <ListItemButton onClick={handleClick3} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <ListItemIcon>
-                                <Widgets  />
+                                <Widgets />
                             </ListItemIcon>
                             <span>Hàng hóa</span>
                         </div>
@@ -417,7 +457,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     <ListItemButton onClick={handleClick7} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <ListItemIcon>
-                              <Camera  />
+                                <Camera />
                             </ListItemIcon>
                             <span>Hệ thống</span>
                         </div>
@@ -451,7 +491,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     <ListItemButton onClick={handleClick8} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <ListItemIcon>
-                                <PanTool  />
+                                <PanTool />
                             </ListItemIcon>
                             <span>CSKH</span>
                         </div>
