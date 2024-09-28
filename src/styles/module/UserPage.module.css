@@ -1,0 +1,11 @@
+.tileTable{
+    font-family: 'Rounded';
+    font-weight: 600;
+    color: black;
+    font-size: 15px;
+}
+.inputFormAdd{
+    margin-top: 1px !important;
+    font-family: 'Rounded';
+    margin-bottom: 5px;
+}

@@ -1,12 +1,43 @@
 // app/room-work/page.tsx
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../../styles/module/RoomWork.module.css";
-import { Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { fetchCompanyIdByUserId } from "@/services/User/_v1";
+import Toast from "@/lib/toast";
 export default function RoomWork() {
+    const [companyId, setCompanyId] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        const userId = Number(sessionStorage.getItem("user_id"));
+        console.log("userId from session:", userId)
+        if (userId) {
+            fetchCompanyIdByUserId(userId)
+                .then((companyId) => {
+                    setCompanyId(companyId);
+                    sessionStorage.setItem("company_id", companyId);
+                    console.log("company_id: ", companyId);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    Toast.error('Lỗi truy vấn dữ liệu công ty');
+                })
+                .finally(() => setLoading(false));
+        } else {
+            console.error("No user_id found in session.");
+            Toast.error('Lỗi truy vấn dữ liệu công ty');
+            setLoading(false);
+        }
+    }, []);
 
-
+    if (loading) {
+        return (
+            <div className={styles.loaderContainer}>
+                <CircularProgress size="5rem" />
+            </div>
+        );
+    }
 
     return (
         <section className={styles.container}>
@@ -40,7 +71,6 @@ export default function RoomWork() {
                     Bắt đầu làm việc
                 </Button>
             </div>
-
         </section>
     );
 }

@@ -1,3 +1,16 @@
-.css-1sh6wjw-MuiInputBase-input-MuiOutlinedInput-input {
+.css-1sh6wjw-MuiInputBase-input-MuiOutlinedInput-input, .css-8voplp-MuiFormLabel-root-MuiInputLabel-root, .css-1huaqfz-MuiFormLabel-root-MuiInputLabel-root  {
     font-family: 'Rounded' !important;
+}
+.itemMenu{
+    text-decoration: none;
+    color: inherit;
+}
+.itemMenu:hover{
+    color: #0072bc;
+}
+.loaderContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }

@@ -17,6 +17,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { Badge, Collapse, InputBase, Paper } from '@mui/material';
 import { ExpandLess, ExpandMore, ConfirmationNumber, PanTool, Widgets, EditNote, Camera, Leaderboard, AccountCircle, Search, Notifications, Airplay } from '@mui/icons-material';
+import Link from 'next/link';
+import '@/styles/css/global.css'
 
 const drawerWidth = 260;
 
@@ -208,7 +210,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     };
 
 
-  
+
 
 
     return (
@@ -254,15 +256,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                             <Notifications />
                         </Badge>
                         <IconButton color="inherit" aria-label="account">
-                            <Airplay  />
+                            <Airplay />
                         </IconButton>
                         <IconButton color="inherit" aria-label="system">
                             <AccountCircle />
                         </IconButton>
-                        
-                   
-                            
-                  
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -422,33 +420,56 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </ListItemButton>
                     <Collapse in={open6} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.1 Nhân viên</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.2 Điểm dừng</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.3 Tuyến</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.4 Sơ đồ ghế</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.5 Phương tiện</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.6 Lịch chạy</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.7 Cấp đại lý</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.8 Đại lý</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>5.9 Số máy tổng đài</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/user" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.1 Nhân viên</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/point" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.2 Điểm dừng</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/route" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.3 Tuyến</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/seat-map" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.4 Sơ đồ ghế</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/vehicle" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.5 Phương tiện</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/plan-for-trip" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.6 Lịch chạy</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/level-agency" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.7 Cấp đại lý</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/agency" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.8 Đại lý</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/office" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.9 Văn phòng</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/telecom-number" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>5.10 Số máy tổng đài</span>
+                                </ListItemButton>
+                            </Link>
                         </List>
                     </Collapse>
                 </List>
