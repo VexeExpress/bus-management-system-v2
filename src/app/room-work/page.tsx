@@ -3,12 +3,18 @@
 
 import { useEffect, useState } from "react";
 import styles from "../../styles/module/RoomWork.module.css";
-import { Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { fetchCompanyIdByUserId } from "@/services/User/_v1";
+import { Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { fetchCompanyIdByUserId, fetchNameUserById } from "@/services/User/_v1";
 import Toast from "@/lib/toast";
+import { fetchOffices } from "@/services/office/_v1";
+import { useRouter } from 'next/navigation';
 export default function RoomWork() {
     const [companyId, setCompanyId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
+    const [offices, setOffices] = useState<any[]>([]);
+    const [selectedOffice, setSelectedOffice] = useState<number | ''>('');
+    const [userName, setUserName] = useState<string>('');
+    const router = useRouter();
     useEffect(() => {
         const userId = Number(sessionStorage.getItem("user_id"));
         console.log("userId from session:", userId)
@@ -18,6 +24,19 @@ export default function RoomWork() {
                     setCompanyId(companyId);
                     sessionStorage.setItem("company_id", companyId);
                     console.log("company_id: ", companyId);
+
+                    return fetchOffices(companyId);
+                })
+                .then((offices) => {
+                    setOffices(offices);
+                    console.log("Offices: ", offices);
+
+                    return fetchNameUserById(userId);
+                })
+                .then((name) => {
+                    setUserName(name);
+                    sessionStorage.setItem("name_user", name);
+                    console.log("Name user: ", name);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -30,6 +49,18 @@ export default function RoomWork() {
             setLoading(false);
         }
     }, []);
+    const handleOfficeChange = (event: SelectChangeEvent<number>) => {
+        const selectedOfficeId = event.target.value as number;
+        setSelectedOffice(selectedOfficeId);
+        console.log("Selected office ID:", selectedOfficeId);
+        sessionStorage.setItem("office_id", selectedOfficeId.toString());
+    };
+    const handleStartWorking = () => {
+        
+        router.push('/ticket-01');
+    };
+
+
 
     if (loading) {
         return (
@@ -49,7 +80,7 @@ export default function RoomWork() {
             <div className={styles.right}>
                 <h1 className={styles.title}>Chào mừng!</h1>
                 <span className={styles.titleSmall}>
-                    Chào mừng bạn <span className={styles.titleName}>Đặng Tuấn Thành</span> đến
+                    Chào mừng bạn <span className={styles.titleName}>{userName}</span> đến
                     với phần mềm quản lý bán vé xe khách! Vui lòng chọn phòng vé của bạn
                     để bắt đầu
                 </span>
@@ -60,14 +91,19 @@ export default function RoomWork() {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Chọn phòng vé"
+                        value={selectedOffice}
+                        onChange={handleOfficeChange}
                     >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        {offices.map((office) => (
+                            <MenuItem key={office.id} value={office.id}>
+                                {office.name}
+                            </MenuItem>
+                        ))}
+
                     </Select>
                 </FormControl>
                 <br />
-                <Button style={{ width: '80%' }} variant="contained">
+                <Button onClick={handleStartWorking}  disabled={selectedOffice === ''} style={{ width: '80%' }} variant="contained">
                     Bắt đầu làm việc
                 </Button>
             </div>

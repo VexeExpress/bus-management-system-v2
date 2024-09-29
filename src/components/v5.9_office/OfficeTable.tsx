@@ -6,36 +6,22 @@ import { useEffect, useState } from "react";
 import { fetchOffices } from "@/services/office/_v1";
 import LoadingIndicator from "@/lib/loading";
 import { Delete, Mode } from "@mui/icons-material";
+import { Office } from "@/types/Office";
 
-function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
-) {
-    return { name, calories, fat, carbs, protein };
-}
 
-const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-interface OfficeTableProps {
-    companyId: number;
-}
-interface Office {
-    id: number;
-    name: string;
-    code: string;
-    phone: string;
-    address: string;
-    note: string;
-}
-const OfficeTable: React.FC<{ offices: any[]; loading: boolean; error: string | null }> = ({ offices, loading, error }) => {
+const OfficeTable: React.FC<{
+    offices: Office[];
+    loading: boolean;
+    error: string | null;
+    onDelete: (id: number) => void;
+    onEdit: (office: Office) => void;
+}> = ({ offices, loading, error, onDelete, onEdit }) => {
+    const handleDelete = (id: number) => {
+        if (window.confirm('Bạn có chắc chắn muốn xóa văn phòng này?')) {
+            onDelete(id);
+        }
+    };
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -62,10 +48,10 @@ const OfficeTable: React.FC<{ offices: any[]; loading: boolean; error: string | 
                             <TableCell>{office.address}</TableCell>
                             <TableCell>{office.note}</TableCell>
                             <TableCell>
-                                <IconButton color="error" aria-label="delete">
+                                <IconButton color="error" aria-label="Delete office" onClick={() => handleDelete(office.id)}>
                                     <Delete />
                                 </IconButton>
-                                <IconButton color="info" aria-label="delete">
+                                <IconButton color="info" aria-label="Edit office" onClick={() => onEdit(office)}>
                                     <Mode />
                                 </IconButton>
                             </TableCell>
@@ -74,7 +60,6 @@ const OfficeTable: React.FC<{ offices: any[]; loading: boolean; error: string | 
                 </TableBody>
             </Table>
         </TableContainer>
-
-    )
-}
+    );
+};
 export default OfficeTable;

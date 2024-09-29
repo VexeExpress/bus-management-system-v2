@@ -1,10 +1,11 @@
 'use client';
 
 import { Box, Button, Grid, Modal, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '@/styles/module/OfficePage.module.css';
 import '@/styles/css/global.css';
 import { createOffice } from '@/services/office/_v1';
+import { Office } from '@/types/Office';
 
 const styleModal = {
     position: 'absolute' as 'absolute',
@@ -17,31 +18,54 @@ const styleModal = {
     p: 2,
 };
 
-interface AddOfficeModalProps {
+interface OfficeModalProps {
     open: boolean;
     companyId: number;
     onClose: () => void;
     onAddOffice: (data: any) => void;
+    onUpdateOffice: (data: any) => void;
+    editOffice: Office | null;
 }
 
-const AddOfficeModal: React.FC<AddOfficeModalProps> = ({ open, onClose, onAddOffice, companyId }) => {
+const OfficeModal: React.FC<OfficeModalProps> = ({ open, onClose, onAddOffice, companyId, onUpdateOffice, editOffice }) => {
     const [name, setBranchName] = useState('');
     const [code, setBranchCode] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [note, setNotes] = useState('');
 
+    useEffect(() => {
+        if (editOffice) {
+            setBranchName(editOffice.name);
+            setBranchCode(editOffice.code);
+            setPhone(editOffice.phone);
+            setAddress(editOffice.address);
+            setNotes(editOffice.note);
+        } else {
+            setBranchName('');
+            setBranchCode('');
+            setPhone('');
+            setAddress('');
+            setNotes('');
+        }
+    }, [editOffice]);
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        const newOfficeData = {
+        const officeData = {
             name,
             code,
             phone,
             address,
             note,
-            company: { id: companyId  }
+            company: { id: companyId }
         };
-        onAddOffice(newOfficeData);
+
+        if (editOffice) {
+            onUpdateOffice({ ...officeData, id: editOffice.id });
+        } else {
+            onAddOffice(officeData);
+        }
         onClose();
     };
 
@@ -54,7 +78,7 @@ const AddOfficeModal: React.FC<AddOfficeModalProps> = ({ open, onClose, onAddOff
         >
             <Box sx={styleModal}>
                 <Typography style={{ fontFamily: 'Rounded' }} variant="h6" component="h2" gutterBottom>
-                    THÊM CHI NHÁNH
+                    {editOffice ? 'CẬP NHẬT CHI NHÁNH' : 'THÊM CHI NHÁNH'}
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
@@ -128,7 +152,7 @@ const AddOfficeModal: React.FC<AddOfficeModalProps> = ({ open, onClose, onAddOff
                             Hủy
                         </Button>
                         <Button type="submit" variant="contained" color="primary">
-                            Thêm
+                            {editOffice ? 'Cập nhật' : 'Thêm'}
                         </Button>
                     </Box>
                 </form>
@@ -137,4 +161,4 @@ const AddOfficeModal: React.FC<AddOfficeModalProps> = ({ open, onClose, onAddOff
     );
 };
 
-export default AddOfficeModal;
+export default OfficeModal;

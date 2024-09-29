@@ -44,3 +44,32 @@ export const fetchOffices = async (companyId: number) => {
         }
     }
 };
+
+export const deleteOffice = async ( officeId: number) => {
+    try {
+        const response = await apiClient.delete(`/bms/office/delete/${officeId}`);
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Axios error:', error.response?.data);
+            throw new Error(error.response?.data?.message || 'Lỗi không xác định');
+        } else {
+            console.error('Unexpected error:', error);
+            throw new Error('Lỗi không xác định');
+        }
+    }
+}
+export const updateOffice = async (updatedOfficeData: { id: any; }) => {
+    try {
+        const response = await apiClient.put(`/bms/office/update/${updatedOfficeData.id}`, updatedOfficeData);
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Axios error:', error.response?.data);
+            throw new Error(error.response?.data?.message || 'Lỗi không xác định');
+        } else {
+            console.error('Unexpected error:', error);
+            throw new Error('Lỗi không xác định');
+        }
+    }
+};

@@ -15,11 +15,12 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import { Badge, Collapse, InputBase, Paper } from '@mui/material';
+import { Badge, Collapse, InputBase, Menu, MenuItem, Paper } from '@mui/material';
 import { ExpandLess, ExpandMore, ConfirmationNumber, PanTool, Widgets, EditNote, Camera, Leaderboard, AccountCircle, Search, Notifications, Airplay } from '@mui/icons-material';
 import Link from 'next/link';
 import '@/styles/css/global.css'
-
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 const drawerWidth = 260;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -106,6 +107,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
     const theme = useTheme();
+    const router = useRouter();
     const [open, setOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
@@ -209,8 +211,20 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         setOpen7(false);
     };
 
+    // AccountCircle
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const handleLogout = () => {
+        sessionStorage.clear();
+        router.push('/login');
+    };
 
 
     return (
@@ -247,7 +261,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </Paper>
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <div style={{ paddingRight: 10 }}>
-                            <span>Đặng Tuấn Thành</span>
+                            <span>{sessionStorage.getItem('name_user')}</span>
                         </div>
                         <div style={{ marginLeft: 10, backgroundColor: '#339900', borderRadius: 5, padding: 5 }}>
                             <span>TK: 5.000.000 đ</span>
@@ -258,9 +272,21 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         <IconButton color="inherit" aria-label="account">
                             <Airplay />
                         </IconButton>
-                        <IconButton color="inherit" aria-label="system">
+                        <IconButton
+                            color="inherit"
+                            aria-label="system"
+                            onClick={handleClick}
+                        >
                             <AccountCircle />
                         </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={handleClose}>Đổi mật khẩu</MenuItem>
+                            <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+                        </Menu>
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -285,9 +311,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
                     <Collapse in={open2} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.1 Vé hành khách</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/ticket-sales" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.1 Vé hành khách</span>
+                                </ListItemButton>
+                            </Link>
                             <ListItemButton sx={{ pl: 4 }}>
                                 <span>1.2 Tra cứu thông tin vé</span>
                             </ListItemButton>

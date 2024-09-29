@@ -5,7 +5,4 @@ export interface Office {
     phone: string;
     address: string;
     note: string;
-    company: {
-        id: number;
-    }
 }
