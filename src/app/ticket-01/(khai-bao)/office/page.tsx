@@ -21,7 +21,9 @@ export default function OfficePage() {
 
     const handleAddOffice = async (newOfficeData: Office) => {
         try {
+            console.log("Data: " + JSON.stringify(newOfficeData));
             const newOffice = await createOffice(newOfficeData);
+            Toast.success("Thêm văn phòng thành công")
             setOffices((prevOffices) => [...prevOffices, newOffice]);
         } catch (err: unknown) {
             if (typeof err === 'string') {
@@ -36,7 +38,7 @@ export default function OfficePage() {
     const handleDeleteOffice = async (officeId: number) => {
         try {
             await deleteOffice(officeId);
-            setOffices((prevOffices) => prevOffices.filter(office => office.id !== officeId)); // Update state to remove the office
+            setOffices((prevOffices) => prevOffices.filter(office => office.id !== officeId)); 
             Toast.success('Xóa văn phòng thành công');
         } catch (err: unknown) {
             const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');

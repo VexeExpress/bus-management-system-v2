@@ -1,3 +1,9 @@
 .inputForm{
     font-family: 'Rounded';
 }
+.tileTable{
+    font-family: 'Rounded';
+    font-weight: 600;
+    color: black;
+    font-size: 15px;
+}

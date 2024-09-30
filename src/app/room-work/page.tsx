@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import styles from "../../styles/module/RoomWork.module.css";
 import { Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { fetchCompanyIdByUserId, fetchNameUserById } from "@/services/User/_v1";
+import { fetchCompanyIdByUserId, fetchNameUserById } from "@/services/user/_v1";
 import Toast from "@/lib/toast";
 import { fetchOffices } from "@/services/office/_v1";
 import { useRouter } from 'next/navigation';

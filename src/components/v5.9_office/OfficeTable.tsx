@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, CircularProgress, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import styles from '@/styles/module/UserPage.module.css';
+import styles from '@/styles/module/OfficePage.module.css';
 import { useEffect, useState } from "react";
 import { fetchOffices } from "@/services/office/_v1";
 import LoadingIndicator from "@/lib/loading";
