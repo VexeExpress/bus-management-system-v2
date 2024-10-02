@@ -2,5 +2,103 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-top: -20px;
+    padding-left: 10px;
+    background-color: antiquewhite;
+}
+.containerListTrip{
+    gap: 2px;
+    margin-top: -2px;
+    padding: 10px;
+    background-color: aqua;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* 6 items per row */
+}
+.itemListTrip {
+    flex: 1; 
+    text-align: center; 
+    padding: 10px; 
+    background-color: blue;
+    
+}
+.tripShowMode {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Ensures that each trip takes up a minimum of 160px */
+    grid-gap: 2px; 
+    background-color: bisque;
+    padding: 3px;
+    width: 100%;
+
+
+
+}
+
+.trip {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #9399a9;
+    justify-content: space-between;
+    position: relative;
+    min-width: 160px; /* Minimum width for the trip item */
+    width: 100%; /* Ensures the trip element fills the grid cell */
+    box-sizing: border-box; /* Ensures padding/border are included in the element's total width */
+}
+.proccessBar{
+    width: 100%;
+    background: #ecedf1;
+    height: 33px;
+    position: relative;
+}
+.proccessBarContent {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.time {
+    flex-grow: 1; /* Time is aligned to the left */
+    text-align: left;
+}
+.tickets {
+    text-align: right;
+}
+.proccessBarFill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: green; /* Color of the progress bar */
+    z-index: -1; /* Put it behind the content */
+    width: 50%; /* Set the width dynamically as per progress */
+}
+.driver{
+    display: flex;
+    flex-wrap: wrap;
+    font-style: normal;
+    flex-direction: column;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 14px;
+    letter-spacing: .466667px;
+    color: #232731;
+}
+.vehicle{
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 5px;
+    align-items: center;
+}
+.vehicle span{
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 19px;
+    letter-spacing: -1px;
+    color: #383f47;
+    white-space: nowrap;
+}
+.driver p {
+    margin-left: 3px;
+    margin-left: 3px;
 }

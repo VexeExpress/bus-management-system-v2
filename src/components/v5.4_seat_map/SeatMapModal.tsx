@@ -4,7 +4,7 @@ import { Route } from "@/types/Route";
 import { Box, Button, Grid, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import styles from '@/styles/module/VehiclePage.module.css';
-import { SeatData, SeatMap, SeatMapData } from "@/types/SeatMap";
+import { SeatData, SeatMapData } from "@/types/SeatMap";
 
 const styleModal = {
     position: 'absolute',

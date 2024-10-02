@@ -213,18 +213,30 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     // AccountCircle
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
     const handleLogout = () => {
         sessionStorage.clear();
+        handleClose();
         router.push('/login');
+
     };
+
+
+    const handleAccountClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAccountAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setAccountAnchorEl(null);
+    };
+
+
 
 
     return (
@@ -269,19 +281,25 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         <Badge badgeContent={4} color="secondary" style={{ marginRight: 10, marginLeft: 20 }}>
                             <Notifications />
                         </Badge>
-                        <IconButton color="inherit" aria-label="account">
+                        <IconButton color="inherit" aria-label="account" onClick={handleClick}>
                             <Airplay />
-                        </IconButton>
-                        <IconButton
-                            color="inherit"
-                            aria-label="system"
-                            onClick={handleClick}
-                        >
-                            <AccountCircle />
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
                             open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={() => console.log("Technical support clicked")}>Hỗ trợ kĩ thuật: 0877 717575</MenuItem>
+                            <MenuItem onClick={() => console.log("Remote control clicked")}>Điều khiển từ xa</MenuItem>
+                            <MenuItem onClick={() => console.log("Feedback clicked")}>Gửi phản hồi cho VexeExpress</MenuItem>
+                            <MenuItem onClick={() => console.log("Feedback history clicked")}>Lịch sử phản hồi</MenuItem>
+                        </Menu>
+                        <IconButton color="inherit" aria-label="system" onClick={handleAccountClick}>
+                            <AccountCircle />
+                        </IconButton>
+                        <Menu
+                            anchorEl={accountAnchorEl}
+                            open={Boolean(accountAnchorEl)}
                             onClose={handleClose}
                         >
                             <MenuItem onClick={handleClose}>Đổi mật khẩu</MenuItem>

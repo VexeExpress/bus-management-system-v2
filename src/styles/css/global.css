@@ -14,3 +14,7 @@
     align-items: center;
     width: 100%;
 }
+.MuiBox-root{
+    padding: 0 !important;
+    width: 100%;
+}
