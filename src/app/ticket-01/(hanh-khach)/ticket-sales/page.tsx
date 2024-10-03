@@ -10,11 +10,15 @@ import { AddCircleOutline, AutoMode } from '@mui/icons-material';
 import { fetchActiveRouters } from '@/services/route/_v1';
 import TripModal from '@/components/v1.1_ticket_sales/TripModal';
 export default function BanVe() {
-    const [selectedRoute, setSelectedRoute] = useState('');
+    const [open, setOpen] = useState(false);
+    const [selectedRouteId, setSelectedRouteId] = useState<number | string>('');
+    const [selectedRouteName, setSelectedRouteName] = useState<string>('');
     const [routes, setRoutes] = useState([]);
     const [error, setError] = useState<string | null>(null);
     const [value, setValue] = useState<Date | null>(new Date());
+
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
+    const companyId = Number(sessionStorage.getItem('company_id'));
 
     const formatDateToVietnamese = (date: Date): string => {
         const day = String(date.getDate()).padStart(2, '0');
@@ -51,20 +55,14 @@ export default function BanVe() {
         fetchRoutes();
     }, []);
     // modal add trip
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const showModal = () => {
-        setIsModalVisible(true);
+        setOpen(true)
     };
 
     const handleClose = () => {
-        setIsModalVisible(false);
+        setOpen(false)
     };
-    const tripDetails = {
-        id: '123',
-        companyId: 'ABC',
-        valueVehicle: 'Bus',
-        valueRouter: 'City A to City B',
-    };
+
 
 
     return (
@@ -107,18 +105,24 @@ export default function BanVe() {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={selectedRoute}
+                            value={selectedRouteId}
                             label="Chọn tuyến"
-                            onChange={(e) => setSelectedRoute(e.target.value)} // Cập nhật giá trị đã chọn
+                            onChange={(e) => {
+                                const selectedRouteId = e.target.value;
+                                setSelectedRouteId(selectedRouteId);
+                                const selectedRoute = routes.find((route: any) => route.id === selectedRouteId);
+                                if (selectedRoute) {
+                                    setSelectedRouteName(selectedRoute.routeName);
+                                }
+                            }}
                         >
                             {routes.map((route: any) => (
                                 <MenuItem key={route.id} value={route.id}>
                                     {route.routeName}
                                 </MenuItem>
                             ))}
-
-
                         </Select>
+
                     </FormControl>
                 </div>
                 <div style={{ marginLeft: 'auto' }}>
@@ -132,8 +136,12 @@ export default function BanVe() {
                 <ListTrip />
             </section>
             <TripModal
-                open={isModalVisible}
+                open={open}
                 onClose={handleClose}
+                companyId={companyId}
+                selectedDate={value ?? new Date()}
+                selectedRouteId={selectedRouteId}
+                selectedRouteName={selectedRouteName}
             />
         </>
     );
