@@ -4,9 +4,10 @@ import { Trip } from "@/types/Trip";
 import { Box, Button, Chip, Grid, MenuItem, Modal, OutlinedInput, Select, SelectChangeEvent, TextField, Theme, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import dayjs from 'dayjs';
-import { fetchSeatMapName } from "@/services/seat_map/_v1";
+import { fetchListSeatMapName } from "@/services/seat_map/_v1";
 import React from "react";
-import { fetchVehicleName } from "@/services/vehicle/_v1";
+import { fetchListVehicleName } from "@/services/vehicle/_v1";
+import { fetchListNameUser } from "@/services/user/_v1";
 
 const styleModal = {
     position: 'absolute' as 'absolute',
@@ -27,39 +28,12 @@ interface TripModalProps {
     onUpdate: (data: any) => void;
     edit: Trip | null;
     selectedDate?: Date;
-    selectedRouteId?: number;
+    selectedRouteId: number;
     selectedRouteName?: string;
 }
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
-const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
 
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
-    return {
-        fontWeight: personName.includes(name)
-            ? theme.typography.fontWeightMedium
-            : theme.typography.fontWeightRegular,
-    };
-}
+
+
 const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, onUpdate, edit, selectedDate, selectedRouteId, selectedRouteName }) => {
 
     console.log("CompanyID: " + companyId)
@@ -72,48 +46,57 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
     const [vehicles, setVehicles] = useState<any[]>([]);
 
     const [selectedVehicle, setSelectedVehicle] = useState<string>('');
-    const [selectedUser, setSelectedUser] = useState<string>('');
-
+    const [selectedUser, setSelectedUser] = useState<string[]>([]);
     const [selectedSeatMap, setSelectedSeatMap] = useState<string>('');
+    const [selectedTime, setSelectedTime] = useState<string>('');
+    const [selectedNote, setSelectedNote] = useState<string>('');
+
     useEffect(() => {
         const fetchAllData = async () => {
             try {
-                // Fetch seat maps, user, and vehicle data in parallel
-                const [seatMaps, user, vehicles] = await Promise.all([
-                    fetchSeatMapName(companyId),
-                    fetchNameUser(companyId),
-                    fetchVehicleName(companyId)
+                const [seatMaps, users, vehicles] = await Promise.all([
+                    fetchListSeatMapName(companyId),
+                    fetchListNameUser(companyId),
+                    fetchListVehicleName(companyId)
                 ]);
-                
+
                 setSeatMaps(seatMaps);
-                setUsers(user);
+                setUsers(users); // Updated to match the variable name
                 setVehicles(vehicles);
-                
+
                 console.log("Map: " + JSON.stringify(seatMaps, null, 2));
-                console.log("User: " + JSON.stringify(user, null, 2));
+                console.log("User: " + JSON.stringify(users, null, 2)); // Updated to match the variable name
                 console.log("Vehicle: " + JSON.stringify(vehicles, null, 2));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
-        
+
         fetchAllData();
 
         if (edit) {
-
+            // Logic for edit mode
         } else {
-
+            // Logic for non-edit mode
         }
 
     }, [companyId, edit]);
 
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        const formattedDateTrip = dayjs(selectedDate).format('YYYY-MM-DD');
         const data = {
             routeId: selectedRouteId,
-            dateTrip: selectedDate,
+            dateTrip: formattedDateTrip,
+            vehicleId: selectedVehicle,
+            userId: selectedUser.join(','),
+            seatMapId: selectedSeatMap,
+            time: selectedTime,
+            note: selectedNote,
             company: { id: companyId }
         };
+        console.log("Submit: " + JSON.stringify(data, null, 2));
 
         if (edit) {
             onUpdate({ ...data, id: edit.id });
@@ -127,18 +110,9 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
     };
 
 
-    const theme = useTheme();
-    const [personName, setPersonName] = React.useState<string[]>([]);
 
-    const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-        const {
-            target: { value },
-        } = event;
-        setPersonName(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
+
+
     return (
         <Modal
             open={open}
@@ -225,10 +199,11 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                                     style={{ marginTop: 0, width: '105px' }}
                                     margin="normal"
                                     required
-                                    fullWidth
                                     name="time"
                                     type="time"
                                     size="small"
+                                    value={selectedTime}
+                                    onChange={(e) => setSelectedTime(e.target.value)}
                                 />
                             </Grid>
                         </Grid>
@@ -237,25 +212,13 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                             multiple
                             fullWidth
                             size="small"
-                            value={personName}
-                            onChange={handleChange}
-                            input={<OutlinedInput id="select-multiple-chip" />}
-                            renderValue={(selected) => (
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value) => (
-                                        <Chip key={value} label={value} />
-                                    ))}
-                                </Box>
-                            )}
-                            MenuProps={MenuProps}
+                            name="selectedUser"
+                            value={selectedUser}
+                            onChange={(e) => setSelectedUser(e.target.value as string[])}
                         >
-                            {names.map((name) => (
-                                <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, personName, theme)}
-                                >
-                                    {name}
+                            {users.map((user) => (
+                                <MenuItem key={user.id} value={user.id}>
+                                    {user.name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -266,11 +229,13 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                             fullWidth
                             size="small"
                             maxRows={4}
+                            value={selectedNote}
+                            onChange={(e) => setSelectedNote(e.target.value)}
                         />
                     </div>
 
 
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2, marginBottom: 2,  }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2, marginBottom: 2, }}>
                         <Button onClick={onClose} color="primary" variant="outlined" style={{ marginRight: 10 }}>
                             Hủy
                         </Button>

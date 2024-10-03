@@ -84,4 +84,12 @@ export const changePassUser = async (userId: number) => {
         throw error;
     }
 }
+export const fetchListNameUser = async (companyId: number) => {
+    try {
+        const response = await apiClient.get(`/bms/user/get-list-name-user/${companyId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 

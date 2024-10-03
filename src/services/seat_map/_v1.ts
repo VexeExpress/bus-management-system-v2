@@ -43,7 +43,7 @@ export const fetchSeatMap = async (companyId: number) => {
         }
     }
 }
-export const fetchSeatMapName = async (companyId: number) => {
+export const fetchListSeatMapName = async (companyId: number) => {
     try {
         const response = await apiClient.get(`/bms/seat-map/seat-maps-name/${companyId}`);
         return response.data;

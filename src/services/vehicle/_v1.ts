@@ -19,7 +19,7 @@ export const fetchVehicle = async (companyId: number) => {
         }
     }
 }
-export const fetchVehicleName = async (companyId: number) => {
+export const fetchListVehicleName = async (companyId: number) => {
     try {
         const response = await apiClient.get(`/bms/vehicle/vehicles-name/${companyId}`);
         return response.data;

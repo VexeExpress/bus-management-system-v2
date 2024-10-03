@@ -11,11 +11,11 @@ import { fetchActiveRouters } from '@/services/route/_v1';
 import TripModal from '@/components/v1.1_ticket_sales/TripModal';
 export default function BanVe() {
     const [open, setOpen] = useState(false);
-    const [selectedRouteId, setSelectedRouteId] = useState<number | string>('');
+    const [selectedRouteId, setSelectedRouteId] = useState<number>(null);
     const [selectedRouteName, setSelectedRouteName] = useState<string>('');
     const [routes, setRoutes] = useState([]);
     const [error, setError] = useState<string | null>(null);
-    const [value, setValue] = useState<Date | null>(new Date());
+    const [selectedDate, setValue] = useState<Date | null>(new Date());
 
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
     const companyId = Number(sessionStorage.getItem('company_id'));
@@ -78,7 +78,7 @@ export default function BanVe() {
                         style={{ minWidth: 250, fontFamily: 'Rounded' }}
                         id="outlined-basic"
                         variant="outlined"
-                        value={value ? formatDateToVietnamese(value) : ''}
+                        value={selectedDate ? formatDateToVietnamese(selectedDate) : ''}
                         onClick={handleInputClick}
                         InputProps={{
                             readOnly: true,
@@ -92,7 +92,7 @@ export default function BanVe() {
                                 left: 0,
                             }}
                         >
-                            <Calendar onChange={handleDateChange} value={value} />
+                            <Calendar onChange={handleDateChange} value={selectedDate} />
                         </div>
                     )}
                 </div>
@@ -114,23 +114,26 @@ export default function BanVe() {
                                 if (selectedRoute) {
                                     setSelectedRouteName(selectedRoute.routeName);
                                 }
-                            }}
-                        >
+                            }}>
                             {routes.map((route: any) => (
                                 <MenuItem key={route.id} value={route.id}>
                                     {route.routeName}
                                 </MenuItem>
                             ))}
                         </Select>
-
                     </FormControl>
                 </div>
-                <div style={{ marginLeft: 'auto' }}>
-                    <Button startIcon={<AddCircleOutline />} variant="contained" style={{ textTransform: 'none', fontFamily: 'Rounded' }} onClick={showModal}>Tăng cường chuyến</Button>
-                </div>
-                <div style={{ marginRight: '10px' }}>
+
+
+
+                <div style={{ marginLeft: 'auto', marginRight: '10px' }}>
                     <Button startIcon={<AutoMode />} variant="contained" style={{ textTransform: 'none', fontFamily: 'Rounded' }}>Làm mới</Button>
                 </div>
+                {selectedRouteId && (
+                    <div style={{ marginRight: '10px', marginLeft: '-10px' }}>
+                        <Button startIcon={<AddCircleOutline />} variant="contained" style={{ textTransform: 'none', fontFamily: 'Rounded' }} onClick={showModal}>Tăng cường chuyến</Button>
+                    </div>
+                )}
             </section>
             <section>
                 <ListTrip />
@@ -139,7 +142,7 @@ export default function BanVe() {
                 open={open}
                 onClose={handleClose}
                 companyId={companyId}
-                selectedDate={value ?? new Date()}
+                selectedDate={selectedDate ?? new Date()}
                 selectedRouteId={selectedRouteId}
                 selectedRouteName={selectedRouteName}
             />
