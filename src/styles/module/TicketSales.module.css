@@ -3,31 +3,28 @@
     align-items: center;
     gap: 16px;
     padding-left: 10px;
-    background-color: antiquewhite;
 }
-.containerListTrip{
-    gap: 2px;
-    margin-top: -2px;
-    padding: 10px;
-    background-color: aqua;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+
+.containerListTrip {
     display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 items per row */
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    margin-top: 0;
+    padding-left: 10px;
+    padding-right: 10px;
 }
+
 .itemListTrip {
-    flex: 1; 
-    text-align: center; 
-    padding: 10px; 
-    background-color: blue;
-    
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    height: 100%;
 }
+
 .tripShowMode {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Ensures that each trip takes up a minimum of 160px */
-    grid-gap: 2px; 
-    background-color: bisque;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-gap: 2px;
     padding: 3px;
     width: 100%;
 
@@ -40,40 +37,60 @@
     display: flex;
     flex-direction: column;
     border: 1px solid #9399a9;
+    border-radius: 5px;
     justify-content: space-between;
     position: relative;
-    min-width: 160px; /* Minimum width for the trip item */
-    width: 100%; /* Ensures the trip element fills the grid cell */
-    box-sizing: border-box; /* Ensures padding/border are included in the element's total width */
+    min-width: 160px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
 }
-.proccessBar{
+
+.proccessBar {
     width: 100%;
     background: #ecedf1;
     height: 33px;
+    border-radius: 5px 5px 0 0;
     position: relative;
 }
+
 .proccessBarContent {
     display: flex;
     justify-content: space-between;
     width: 100%;
 }
+
 .time {
-    flex-grow: 1; /* Time is aligned to the left */
+    flex-grow: 1;
+    /* Time is aligned to the left */
     text-align: left;
+    margin-left: 3px;
+    font-weight: 700;
+    font-size: 18px;
 }
+
 .tickets {
     text-align: right;
+    margin-right: 5px;
+    font-weight: 700;
+    font-size: 18px;
 }
+
 .proccessBarFill {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
-    background-color: green; /* Color of the progress bar */
-    z-index: -1; /* Put it behind the content */
-    width: 50%; /* Set the width dynamically as per progress */
+    background-color: green;
+    /* Color of the progress bar */
+    z-index: -1;
+    /* Put it behind the content */
+    width: 50%;
+    /* Set the width dynamically as per progress */
 }
-.driver{
+
+.driver {
     display: flex;
     flex-wrap: wrap;
     font-style: normal;
@@ -84,13 +101,15 @@
     letter-spacing: .466667px;
     color: #232731;
 }
-.vehicle{
+
+.vehicle {
     display: flex;
     justify-content: flex-end;
     padding: 0 5px;
     align-items: center;
 }
-.vehicle span{
+
+.vehicle span {
     font-weight: 500;
     font-size: 15px;
     line-height: 19px;
@@ -98,6 +117,7 @@
     color: #383f47;
     white-space: nowrap;
 }
+
 .driver p {
     margin-left: 3px;
     margin-left: 3px;

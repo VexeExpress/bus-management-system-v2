@@ -48,32 +48,35 @@ const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRo
     return (
         <>
             <div className={styles.containerListTrip}>
-                {trips.map((trip, index) => (
-                    <div key={index} className={styles.tripShowMode}>
-                        <div className={styles.trip}>
-                            <div className={styles.proccessBar}>
-                                <div className={styles.proccessBarContent}>
-                                    <span className={styles.time}>{trip.time}</span>
-                                    <span className={styles.tickets}>36</span>
+                {trips
+                    .sort((a, b) => {
+                        // Sắp xếp các chuyến dựa trên chuỗi thời gian 'HH:mm:ss'
+                        return a.time.localeCompare(b.time); // So sánh chuỗi thời gian để sắp xếp
+                    })
+                    .map((trip, index) => (
+                        <div key={index} className={styles.tripShowMode}>
+                            <div className={styles.trip}>
+                                <div className={styles.proccessBar}>
+                                    <div className={styles.proccessBarContent}>
+                                        {/* Chỉ hiển thị giờ và phút, cắt bỏ giây */}
+                                        <span className={styles.time}>{trip.time.slice(0, 5)}</span>
+
+                                        <span className={styles.tickets}>24/36</span>
+                                    </div>
+                                    <div className={styles.proccessBarFill}></div>
                                 </div>
-                                <div className={styles.proccessBarFill}></div>
-                            </div>
-                            <div className={styles.driver}>
-                                <p>
-                                    <span>T: {trip.user ? trip.user.join(', ') : ''}</span>
-                                </p>
-                            </div>
-                            <div className={styles.vehicle}>
-                                <span>{trip.seatMapName} ({trip.licensePlate})</span>
+                                <div className={styles.driver}>
+                                    <p>
+                                        {/* Hiển thị tên tài xế, cách nhau bằng dấu phẩy */}
+                                        <span>T: {trip.user ? trip.user.join(', ') : ''}</span>
+                                    </p>
+                                </div>
+                                <div className={styles.vehicle}>
+                                    <span>{trip.seatMapName} ({trip.licensePlate})</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
-            <div>
-                <ul>
-
-                </ul>
+                    ))}
             </div>
         </>
     );

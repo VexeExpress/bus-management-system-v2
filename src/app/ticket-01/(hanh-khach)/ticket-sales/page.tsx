@@ -1,17 +1,23 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, FormControl, InputLabel, MenuItem, Select, Tab, TextField } from "@mui/material";
 import '@/styles/css/global.css';
 import styles from "@/styles/module/TicketSales.module.css";
 import Calendar, { CalendarProps } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ListTrip from '@/components/v1.1_ticket_sales/ListTrip';
-import { AddCircleOutline, AutoMode } from '@mui/icons-material';
+import { AddCircleOutline, AutoMode, ExpandMore } from '@mui/icons-material';
 import { fetchActiveRouters } from '@/services/route/_v1';
 import TripModal from '@/components/v1.1_ticket_sales/TripModal';
 import { Trip } from '@/types/Trip';
 import Toast from '@/lib/toast';
 import { createTrip } from '@/services/trip/_v1';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import SeatMap from '@/components/v1.1_ticket_sales/Tab/SeatMap';
+import TicketList from '@/components/v1.1_ticket_sales/Tab/TicketList';
+import CustomerTransfer from '@/components/v1.1_ticket_sales/Tab/CustomerTransfer';
+import CargoOnBus from '@/components/v1.1_ticket_sales/Tab/CargoOnBus';
+import TripFinances from '@/components/v1.1_ticket_sales/Tab/TripFinances';
 export default function BanVe() {
     const [open, setOpen] = useState(false);
     const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
@@ -22,9 +28,7 @@ export default function BanVe() {
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
     const companyId = Number(sessionStorage.getItem('company_id'));
     const [edit, setEditTrip] = useState<Trip | null>(null);
-    const handleReloadList = () => {
-        setReloadList(!reloadList);
-    }
+
     const formatDateToVietnamese = (date: Date): string => {
         const day = String(date.getDate()).padStart(2, '0');
 
@@ -59,13 +63,12 @@ export default function BanVe() {
 
         fetchRoutes();
     }, []);
-    const handleAdd = async(newData: Trip) => {
+    const handleAdd = async (newData: Trip) => {
         try {
             console.log("Data: " + JSON.stringify(newData));
             const newTrip = await createTrip(newData);
             console.log("Trip added: " + JSON.stringify(newTrip));
             Toast.success("Tạo chuyến thành công")
-            handleReloadList();
         } catch (error: any) {
             console.error('Error creating trip:', error.message);
         }
@@ -81,7 +84,10 @@ export default function BanVe() {
     };
 
 
-
+    const [valueTab, setValueTab] = useState<string>('1');
+    const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+        setValueTab(newValue);
+    };
     return (
         <>
             <section className={styles.row}>
@@ -154,6 +160,49 @@ export default function BanVe() {
             </section>
             <section>
                 <ListTrip companyId={companyId} selectedDate={selectedDate} selectedRouteId={selectedRouteId} />
+            </section>
+            <section>
+                <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        aria-controls="panel1-content"
+                        id="panel1-header"
+                    >
+                        Accordion 1
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                        malesuada lacus ex, sit amet blandit leo lobortis eget.
+                    </AccordionDetails>
+                </Accordion>
+            </section>
+            <section>
+                <TabContext value={valueTab}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
+                            <Tab label="Sơ đồ ghế" value="1" />
+                            <Tab label="Danh sách vé" value="2" />
+                            <Tab label="Trung chuyển" value="3" />
+                            <Tab label="Hàng trên xe" value="4" />
+                            <Tab label="Thu chi chuyến" value="5" />
+                        </TabList>
+                    </Box>
+                    <TabPanel value="1">
+                        <SeatMap />
+                    </TabPanel>
+                    <TabPanel value="2">
+                        <TicketList />
+                    </TabPanel>
+                    <TabPanel value="3">
+                        <CustomerTransfer />
+                    </TabPanel>
+                    <TabPanel value="4">
+                        <CargoOnBus />
+                    </TabPanel>
+                    <TabPanel value="5">
+                        <TripFinances />
+                    </TabPanel>
+                </TabContext>
             </section>
             <TripModal
                 open={open}
