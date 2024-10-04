@@ -10,12 +10,12 @@ export const createTrip = async (tripData: Trip) => {
         throw new Error(error.response.data || 'Tạo chuyến đi thất bại');
     }
 }
-export const fetchTrip = async (companyId: number, date: string, routerId: number): Promise<any> => {
+export const fetchTrip = async (companyId: number, dateTrip: string, routerId: number): Promise<any> => {
     try {
         const response = await apiClient.get('bms/trip/search', {
             params: {
                 companyId,
-                date,
+                dateTrip,
                 routerId
             },
         });

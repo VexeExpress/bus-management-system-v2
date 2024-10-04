@@ -40,6 +40,7 @@ export default function BanVe() {
         if (date instanceof Date) {
             setValue(date);
             console.log(date);
+            setItemSelected(false);
         }
         setShowCalendar(false);
     };
@@ -88,6 +89,13 @@ export default function BanVe() {
     const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
         setValueTab(newValue);
     };
+    const [itemSelected, setItemSelected] = useState<boolean>(false);
+    const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+
+    const handleItemSelect = (id: number) => {
+        setItemSelected(true);
+        setSelectedItemId(id);
+    };
     return (
         <>
             <section className={styles.row}>
@@ -132,6 +140,7 @@ export default function BanVe() {
                             label="Chọn tuyến"
                             onChange={(e) => {
                                 const selectedRouteId = e.target.value;
+                                setItemSelected(false);
                                 setSelectedRouteId(selectedRouteId);
                                 const selectedRoute = routes.find((route: any) => route.id === selectedRouteId);
                                 if (selectedRoute) {
@@ -159,51 +168,55 @@ export default function BanVe() {
                 )}
             </section>
             <section>
-                <ListTrip companyId={companyId} selectedDate={selectedDate} selectedRouteId={selectedRouteId} />
+                <ListTrip companyId={companyId} selectedDate={selectedDate} selectedRouteId={selectedRouteId} onItemSelect={handleItemSelect}/>
             </section>
-            <section>
-                <Accordion>
-                    <AccordionSummary
-                        expandIcon={<ExpandMore />}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
-                    >
-                        Accordion 1
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                        malesuada lacus ex, sit amet blandit leo lobortis eget.
-                    </AccordionDetails>
-                </Accordion>
-            </section>
-            <section>
-                <TabContext value={valueTab}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
-                            <Tab label="Sơ đồ ghế" value="1" />
-                            <Tab label="Danh sách vé" value="2" />
-                            <Tab label="Trung chuyển" value="3" />
-                            <Tab label="Hàng trên xe" value="4" />
-                            <Tab label="Thu chi chuyến" value="5" />
-                        </TabList>
-                    </Box>
-                    <TabPanel value="1">
-                        <SeatMap />
-                    </TabPanel>
-                    <TabPanel value="2">
-                        <TicketList />
-                    </TabPanel>
-                    <TabPanel value="3">
-                        <CustomerTransfer />
-                    </TabPanel>
-                    <TabPanel value="4">
-                        <CargoOnBus />
-                    </TabPanel>
-                    <TabPanel value="5">
-                        <TripFinances />
-                    </TabPanel>
-                </TabContext>
-            </section>
+            {itemSelected && ( // Conditionally render based on itemSelected state
+                <>
+                    <section>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMore />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                            >
+                                Accordion 1
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                                malesuada lacus ex, sit amet blandit leo lobortis eget.
+                            </AccordionDetails>
+                        </Accordion>
+                    </section>
+                    <section>
+                        <TabContext value={valueTab}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                <TabList onChange={handleChangeTab} aria-label="lab API tabs example">
+                                    <Tab label="Sơ đồ ghế" value="1" />
+                                    <Tab label="Danh sách vé" value="2" />
+                                    <Tab label="Trung chuyển" value="3" />
+                                    <Tab label="Hàng trên xe" value="4" />
+                                    <Tab label="Thu chi chuyến" value="5" />
+                                </TabList>
+                            </Box>
+                            <TabPanel value="1">
+                                <SeatMap selectedItemId={selectedItemId}/>
+                            </TabPanel>
+                            <TabPanel value="2">
+                                <TicketList />
+                            </TabPanel>
+                            <TabPanel value="3">
+                                <CustomerTransfer />
+                            </TabPanel>
+                            <TabPanel value="4">
+                                <CargoOnBus />
+                            </TabPanel>
+                            <TabPanel value="5">
+                                <TripFinances />
+                            </TabPanel>
+                        </TabContext>
+                    </section>
+                </>
+            )}
             <TripModal
                 open={open}
                 onClose={handleClose}

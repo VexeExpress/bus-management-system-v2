@@ -12,9 +12,10 @@ interface ListTripProps {
     companyId: number;
     selectedDate: string;
     selectedRouteId: number;
+    onItemSelect: (id: number) => void;
 }
 
-const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRouteId }) => {
+const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRouteId, onItemSelect }) => {
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -42,42 +43,52 @@ const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRo
         fetchTrips();
     }, [companyId, formattedDateTrip, selectedRouteId]);
 
+    const handleItemClick = (id: number) => {
+        console.log('Selected trip ID:', id);
+    };
+
 
     if (loading) return <div><LoadingIndicator /></div>;
 
     return (
         <>
             <div className={styles.containerListTrip}>
-                {trips
-                    .sort((a, b) => {
-                        // Sắp xếp các chuyến dựa trên chuỗi thời gian 'HH:mm:ss'
-                        return a.time.localeCompare(b.time); // So sánh chuỗi thời gian để sắp xếp
-                    })
-                    .map((trip, index) => (
-                        <div key={index} className={styles.tripShowMode}>
-                            <div className={styles.trip}>
-                                <div className={styles.proccessBar}>
-                                    <div className={styles.proccessBarContent}>
-                                        {/* Chỉ hiển thị giờ và phút, cắt bỏ giây */}
-                                        <span className={styles.time}>{trip.time.slice(0, 5)}</span>
-
-                                        <span className={styles.tickets}>24/36</span>
+                {Array.isArray(trips) && trips.length > 0 ? (
+                    trips
+                        .sort((a, b) => {
+                            // Sắp xếp các chuyến dựa trên chuỗi thời gian 'HH:mm:ss'
+                            return a.time.localeCompare(b.time); // So sánh chuỗi thời gian để sắp xếp
+                        })
+                        .map((trip, index) => (
+                            <div key={index} className={styles.tripShowMode}>
+                                <div className={styles.trip} onClick={() => onItemSelect(trip.id)}>
+                                    <div className={styles.proccessBar}>
+                                        <div className={styles.proccessBarContent}>
+                                            {/* Chỉ hiển thị giờ và phút, cắt bỏ giây */}
+                                            <span className={styles.time}>{trip.time.slice(0, 5)}</span>
+                                            <span className={styles.tickets}>24/36</span>
+                                        </div>
+                                        <div className={styles.proccessBarFill}></div>
                                     </div>
-                                    <div className={styles.proccessBarFill}></div>
-                                </div>
-                                <div className={styles.driver}>
-                                    <p>
-                                        {/* Hiển thị tên tài xế, cách nhau bằng dấu phẩy */}
-                                        <span>T: {trip.user ? trip.user.join(', ') : ''}</span>
-                                    </p>
-                                </div>
-                                <div className={styles.vehicle}>
-                                    <span>{trip.seatMapName} ({trip.licensePlate})</span>
+                                    <div className={styles.driver}>
+                                        <p>
+                                            {/* Hiển thị tên tài xế, cách nhau bằng dấu phẩy */}
+                                            <span>T: {trip.user ? trip.user.join(', ') : ''}</span>
+                                        </p>
+                                    </div>
+                                    <div className={styles.vehicle}>
+                                        <span>{trip.seatMapName} ({trip.licensePlate})</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                ) : (
+                    <div >
+                        Không có chuyến nào được tìm thấy.
+                    </div>
+                )}
             </div>
+
         </>
     );
 };

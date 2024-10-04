@@ -1,5 +1,9 @@
 import React from 'react';
-const SeatMap: React.FC = () => {
-    return <div>Sơ đồ ghế content here</div>;
+interface SeatMapProps {
+    selectedItemId: number | null; 
+}
+
+const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
+    return <div>Sơ đồ ghế content here, selected item ID: {selectedItemId}</div>;
 };
 export default SeatMap;
