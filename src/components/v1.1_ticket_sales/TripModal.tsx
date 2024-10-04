@@ -94,7 +94,7 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
             seatMapId: selectedSeatMap,
             time: selectedTime,
             note: selectedNote,
-            company: { id: companyId }
+            companyId: companyId,
         };
         console.log("Submit: " + JSON.stringify(data, null, 2));
 

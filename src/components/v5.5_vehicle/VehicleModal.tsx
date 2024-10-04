@@ -78,8 +78,8 @@ const VehicleModal: React.FC<VehicleModalProps> = ({ open, onClose, onAdd, compa
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
-                    <Grid container spacing={4}>
-                        <Grid item xs={4}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
                             <span>Biển số xe</span>
                             <TextField
                                 className={styles.inputForm}
@@ -129,7 +129,7 @@ const VehicleModal: React.FC<VehicleModalProps> = ({ open, onClose, onAdd, compa
                                 onChange={(e) => setRouteNameShort(e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={6}>
                             <span>Số khung</span>
                             <TextField
                                 className={styles.inputForm}
@@ -194,10 +194,7 @@ const VehicleModal: React.FC<VehicleModalProps> = ({ open, onClose, onAdd, compa
                                 onChange={(e) => setBirthDate(e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs={4}>
-                            <span>Chọn sơ đồ ghế</span>
-                            
-                        </Grid>
+                        
 
 
                     </Grid>
