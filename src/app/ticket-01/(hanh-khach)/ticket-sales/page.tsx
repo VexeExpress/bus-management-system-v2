@@ -9,9 +9,12 @@ import ListTrip from '@/components/v1.1_ticket_sales/ListTrip';
 import { AddCircleOutline, AutoMode } from '@mui/icons-material';
 import { fetchActiveRouters } from '@/services/route/_v1';
 import TripModal from '@/components/v1.1_ticket_sales/TripModal';
+import { Trip } from '@/types/Trip';
+import Toast from '@/lib/toast';
+import { createTrip } from '@/services/trip/_v1';
 export default function BanVe() {
     const [open, setOpen] = useState(false);
-    const [selectedRouteId, setSelectedRouteId] = useState<number>(null);
+    const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
     const [selectedRouteName, setSelectedRouteName] = useState<string>('');
     const [routes, setRoutes] = useState([]);
     const [error, setError] = useState<string | null>(null);
@@ -19,7 +22,7 @@ export default function BanVe() {
 
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
     const companyId = Number(sessionStorage.getItem('company_id'));
-
+    const [edit, setEditTrip] = useState<Trip | null>(null);
     const formatDateToVietnamese = (date: Date): string => {
         const day = String(date.getDate()).padStart(2, '0');
 
@@ -54,6 +57,16 @@ export default function BanVe() {
 
         fetchRoutes();
     }, []);
+    const handleAdd = async(newData: Trip) => {
+        try {
+            console.log("Data: " + JSON.stringify(newData));
+            const newTrip = await createTrip(newData);
+            console.log("Trip added: " + JSON.stringify(newTrip));
+            Toast.success("Tạo chuyến thành công")
+        } catch (error: any) {
+            console.error('Error creating trip:', error.message);
+        }
+    }
     // modal add trip
     const showModal = () => {
         setOpen(true)
@@ -61,6 +74,7 @@ export default function BanVe() {
 
     const handleClose = () => {
         setOpen(false)
+        setEditTrip(null)
     };
 
 
@@ -141,6 +155,8 @@ export default function BanVe() {
             <TripModal
                 open={open}
                 onClose={handleClose}
+                edit={edit}
+                onAdd={handleAdd}
                 companyId={companyId}
                 selectedDate={selectedDate ?? new Date()}
                 selectedRouteId={selectedRouteId}

@@ -46,7 +46,7 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
     const [vehicles, setVehicles] = useState<any[]>([]);
 
     const [selectedVehicle, setSelectedVehicle] = useState<string>('');
-    const [selectedUser, setSelectedUser] = useState<string[]>([]);
+    const [selectedUser, setSelectedUser] = useState<number[]>([]);
     const [selectedSeatMap, setSelectedSeatMap] = useState<string>('');
     const [selectedTime, setSelectedTime] = useState<string>('');
     const [selectedNote, setSelectedNote] = useState<string>('');
@@ -90,7 +90,7 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
             routeId: selectedRouteId,
             dateTrip: formattedDateTrip,
             vehicleId: selectedVehicle,
-            userId: selectedUser.join(','),
+            userId: selectedUser,
             seatMapId: selectedSeatMap,
             time: selectedTime,
             note: selectedNote,
@@ -214,7 +214,7 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                             size="small"
                             name="selectedUser"
                             value={selectedUser}
-                            onChange={(e) => setSelectedUser(e.target.value as string[])}
+                            onChange={(e) => setSelectedUser(e.target.value as number[])}
                         >
                             {users.map((user) => (
                                 <MenuItem key={user.id} value={user.id}>
