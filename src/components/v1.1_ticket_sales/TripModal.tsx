@@ -87,7 +87,7 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
         event.preventDefault();
         const formattedDateTrip = dayjs(selectedDate).format('YYYY-MM-DD');
         const data = {
-            routeId: selectedRouteId,
+            routerId: selectedRouteId,
             dateTrip: formattedDateTrip,
             vehicleId: selectedVehicle,
             userId: selectedUser,
@@ -103,6 +103,7 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
         } else {
             onAdd(data);
         }
+
         onClose();
     };
     const formatDateForInput = (date: Date | undefined): string => {

@@ -17,12 +17,14 @@ export default function BanVe() {
     const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
     const [selectedRouteName, setSelectedRouteName] = useState<string>('');
     const [routes, setRoutes] = useState([]);
-    const [error, setError] = useState<string | null>(null);
     const [selectedDate, setValue] = useState<Date | null>(new Date());
 
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
     const companyId = Number(sessionStorage.getItem('company_id'));
     const [edit, setEditTrip] = useState<Trip | null>(null);
+    const handleReloadList = () => {
+        setReloadList(!reloadList);
+    }
     const formatDateToVietnamese = (date: Date): string => {
         const day = String(date.getDate()).padStart(2, '0');
 
@@ -63,6 +65,7 @@ export default function BanVe() {
             const newTrip = await createTrip(newData);
             console.log("Trip added: " + JSON.stringify(newTrip));
             Toast.success("Tạo chuyến thành công")
+            handleReloadList();
         } catch (error: any) {
             console.error('Error creating trip:', error.message);
         }
@@ -150,7 +153,7 @@ export default function BanVe() {
                 )}
             </section>
             <section>
-                <ListTrip />
+                <ListTrip companyId={companyId} selectedDate={selectedDate} selectedRouteId={selectedRouteId} />
             </section>
             <TripModal
                 open={open}

@@ -3,16 +3,48 @@
 import React, { useEffect, useState } from "react";
 import styles from '@/styles/module/TicketSales.module.css'
 import { AddCircleOutline } from "@mui/icons-material";
-const ListTrip: React.FC = () => {
-    const trips = [
-        { driver: "Nguyễn Văn B, 50F - 003.58", vehicle: "Limousine 36 phòng", time: "14:00", tickets: 10 },
-        { driver: "Nguyễn Văn A, 51C - 123.45", vehicle: "Limousine 36 phòng", time: "16:00", tickets: 8 },
-        { driver: "Trần B, 52B - 678.90", vehicle: "Limousine 36 phòng", time: "18:00", tickets: 12 },
-        { driver: "Lê C, 50F - 345.67", vehicle: "Limousine 36 phòng", time: "20:00", tickets: 15 },
-        { driver: "Phạm D, 53C - 456.78", vehicle: "Limousine 36 phòng", time: "22:00", tickets: 5 },
-        { driver: "Võ E, 54B - 567.89", vehicle: "Limousine 36 phòng", time: "00:00", tickets: 20 },
-        { driver: "Võ E, 54B - 567.89", vehicle: "Limousine 36 phòng", time: "00:00", tickets: 20 },
-    ];
+import LoadingIndicator from "@/lib/loading";
+import { fetchTrip } from "@/services/trip/_v1";
+import dayjs from "dayjs";
+
+
+interface ListTripProps {
+    companyId: number;
+    selectedDate: string;
+    selectedRouteId: number;
+}
+
+const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRouteId }) => {
+    const [trips, setTrips] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const formattedDateTrip = dayjs(selectedDate).format('YYYY-MM-DD');
+    // console.log('companyId: ', companyId);
+    // console.log('selectedRouteId: ', selectedRouteId);
+    // console.log('selectedDate: ', formattedDateTrip);
+
+    const fetchTrips = async () => {
+        setLoading(true);
+        try {
+            const data = await fetchTrip(companyId, formattedDateTrip, selectedRouteId);
+            console.log("Data Trip: ", data);
+
+            setTrips(data);
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+
+
+        fetchTrips();
+    }, [companyId, formattedDateTrip, selectedRouteId]);
+
+
+    if (loading) return <div><LoadingIndicator /></div>;
+
     return (
         <>
             <div className={styles.containerListTrip}>
@@ -22,21 +54,26 @@ const ListTrip: React.FC = () => {
                             <div className={styles.proccessBar}>
                                 <div className={styles.proccessBarContent}>
                                     <span className={styles.time}>{trip.time}</span>
-                                    <span className={styles.tickets}>{trip.tickets} vé</span>
+                                    <span className={styles.tickets}>36</span>
                                 </div>
                                 <div className={styles.proccessBarFill}></div>
                             </div>
                             <div className={styles.driver}>
                                 <p>
-                                    <span>T: {trip.driver}</span>
+                                    <span>T: {trip.user ? trip.user.join(', ') : ''}</span>
                                 </p>
                             </div>
                             <div className={styles.vehicle}>
-                                <span>{trip.vehicle}</span>
+                                <span>{trip.seatMapName} ({trip.licensePlate})</span>
                             </div>
                         </div>
                     </div>
                 ))}
+            </div>
+            <div>
+                <ul>
+
+                </ul>
             </div>
         </>
     );

@@ -9,3 +9,10 @@ export interface Trip {
     note: string; 
     companyId: number;
 }
+export interface TripItem {
+    id: number;
+    time: string;
+    seatMapName: string;
+    user: string[];
+    vehicle: string;
+}
