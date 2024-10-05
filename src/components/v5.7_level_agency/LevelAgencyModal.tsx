@@ -6,9 +6,11 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, Menu
 import styles from '@/styles/module/LevelAgencyPage.module.css'; 
 
 interface LevelAgencyModalProps {
+    companyId: number;
     open: boolean;
     onClose: () => void;
-    onAdd: (agency: LevelAgency) => void;
+    onAddAgency: (data: any) => void;
+    onUpdateAgency: (data: any) => void;
     editAgency: LevelAgency | null;
 }
 
@@ -26,7 +28,7 @@ const QUOTA_OPTIONS = [
     { value: 50000, label: '50.000' }
 ];
 
-const LevelAgencyModal: React.FC<LevelAgencyModalProps> = ({ open, onClose, onAdd, editAgency }) => {
+const LevelAgencyModal: React.FC<LevelAgencyModalProps> = ({ open, onClose, onAddAgency, onUpdateAgency, editAgency }) => {
     const [levelName, setLevelName] = useState<string>('');
     const [quota, setQuota] = useState<number>(10000);
 
@@ -44,15 +46,19 @@ const LevelAgencyModal: React.FC<LevelAgencyModalProps> = ({ open, onClose, onAd
         setQuota(10000);
     };
 
-    const handleSubmit = () => {
-        const agency: LevelAgency = {
-            id: editAgency?.id || 0,
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        const agencyData = {
             levelName,
-            quota,
+            quota
         };
-        console.log('Dữ liệu agency:', agency);
-        onAdd(agency);
-        resetForm();
+
+        if (editAgency) {
+            onUpdateAgency({ ...agencyData, id: editAgency.id });
+            console.log(`Chỉnh sửa đại lý với ID: ${editAgency.id}`);
+        } else {
+            onAddAgency(agencyData);
+        }
         onClose();
     };
 
