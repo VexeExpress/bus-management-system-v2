@@ -1,6 +1,6 @@
 .seat-map {
     display: flex; 
-    justify-content: space-between;
+    /* justify-content:space-between; */
     margin: 20px 0; 
 }
 
@@ -11,21 +11,27 @@
 }
 
 .seat-row {
-    display: flex; /* Sử dụng flexbox để xếp ghế trong hàng */
-    justify-content: center; /* Căn giữa ghế trong hàng */
+    display: flex; 
+    justify-content: center; 
+    width: 100%; 
+    box-sizing: border-box; /* Đảm bảo chiều rộng bao gồm viền và padding */
 }
 
+
 .seat {
-    flex: 1;
+    flex: 1 1 0; /* Để thẻ ghế có thể co dãn theo chiều rộng */
     margin: 5px; 
-    display: flex; /* Hiển thị nội dung bên trong thẻ ghế */
-    justify-content: space-between; /* Chia đều không gian giữa mã ghế và số điện thoại */
-    align-items: center; /* Căn giữa nội dung theo chiều dọc */
-    cursor: pointer; /* Con trỏ chuột khi hover vào thẻ ghế */
-    padding: 10px; /* Padding cho thẻ ghế */
-    border: 1px solid #ccc; /* Viền cho thẻ ghế */
-    border-radius: 5px; /* Bo tròn góc cho thẻ ghế */
-    transition: background-color 0.3s; /* Hiệu ứng chuyển tiếp cho màu nền */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    cursor: pointer; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    transition: background-color 0.3s; 
+}
+.css-13xfq8m-MuiTabPanel-root {
+    padding: 0px !important;
 }
 .seat-info {
     display: flex; 
