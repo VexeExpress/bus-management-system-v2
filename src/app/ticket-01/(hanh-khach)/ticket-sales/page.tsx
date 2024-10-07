@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, FormControl, InputLabel, MenuItem, Select, Tab, TextField } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import '@/styles/css/global.css';
 import styles from "@/styles/module/TicketSales.module.css";
 import Calendar, { CalendarProps } from 'react-calendar';
@@ -11,13 +12,15 @@ import { fetchActiveRouters } from '@/services/route/_v1';
 import TripModal from '@/components/v1.1_ticket_sales/TripModal';
 import { Trip } from '@/types/Trip';
 import Toast from '@/lib/toast';
-import { createTrip } from '@/services/trip/_v1';
+import { createTrip, fetchTripDetails } from '@/services/trip/_v1';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import SeatMap from '@/components/v1.1_ticket_sales/Tab/SeatMap';
 import TicketList from '@/components/v1.1_ticket_sales/Tab/TicketList';
 import CustomerTransfer from '@/components/v1.1_ticket_sales/Tab/CustomerTransfer';
 import CargoOnBus from '@/components/v1.1_ticket_sales/Tab/CargoOnBus';
 import TripFinances from '@/components/v1.1_ticket_sales/Tab/TripFinances';
+import LoadingIndicator from '@/lib/loading';
+import dayjs from 'dayjs';
 export default function BanVe() {
     const [open, setOpen] = useState(false);
     const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
@@ -49,31 +52,6 @@ export default function BanVe() {
 
     };
 
-    useEffect(() => {
-        const fetchRoutes = async () => {
-            try {
-                const companyId = 1;
-                const data = await fetchActiveRouters(companyId);
-                setRoutes(data);
-                console.log("Router active: " + JSON.stringify(data));
-
-            } catch (error: any) {
-                console.error('Error fetching routes:', error.message);
-            }
-        };
-
-        fetchRoutes();
-    }, []);
-    const handleAdd = async (newData: Trip) => {
-        try {
-            console.log("Data: " + JSON.stringify(newData));
-            const newTrip = await createTrip(newData);
-            console.log("Trip added: " + JSON.stringify(newTrip));
-            Toast.success("Tạo chuyến thành công")
-        } catch (error: any) {
-            console.error('Error creating trip:', error.message);
-        }
-    }
     // modal add trip
     const showModal = () => {
         setOpen(true)
@@ -91,11 +69,54 @@ export default function BanVe() {
     };
     const [itemSelected, setItemSelected] = useState<boolean>(false);
     const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+    const [tripDetails, setTripDetails] = useState<any>(null);
 
     const handleItemSelect = (id: number) => {
         setItemSelected(true);
         setSelectedItemId(id);
     };
+    const fetchRoutes = async () => {
+        try {
+            const companyId = 1;
+            const data = await fetchActiveRouters(companyId);
+            setRoutes(data);
+            console.log("Router active: " + JSON.stringify(data));
+
+        } catch (error: any) {
+            console.error('Error fetching routes:', error.message);
+        }
+    };
+    const handleAdd = async (newData: Trip) => {
+        try {
+            console.log("Data: " + JSON.stringify(newData));
+            const newTrip = await createTrip(newData);
+            console.log("Trip added: " + JSON.stringify(newTrip));
+            Toast.success("Tạo chuyến thành công")
+        } catch (error: any) {
+            console.error('Error creating trip:', error.message);
+        }
+    }
+    const fetchTripDetailsById = async (id: number) => {
+        if (id === null) return;
+        try {
+            const data = await fetchTripDetails(id);
+            console.log("Data Trip Detail: ", data);
+            setTripDetails(data);
+        } catch (error) {
+            console.error('Error fetching trip details:', error);
+        }
+    };
+    useEffect(() => {
+
+
+        fetchRoutes();
+    }, []);
+    useEffect(() => {
+        if (selectedItemId) {
+            fetchTripDetailsById(selectedItemId);
+        }
+    }, [selectedItemId]);
+
     return (
         <>
             <section className={styles.row}>
@@ -168,24 +189,68 @@ export default function BanVe() {
                 )}
             </section>
             <section>
-                <ListTrip companyId={companyId} selectedDate={selectedDate} selectedRouteId={selectedRouteId} onItemSelect={handleItemSelect}/>
+                <ListTrip companyId={companyId} selectedDate={selectedDate} selectedRouteId={selectedRouteId} onItemSelect={handleItemSelect} />
             </section>
             {itemSelected && ( // Conditionally render based on itemSelected state
                 <>
                     <section>
-                        <Accordion>
-                            <AccordionSummary
-                                expandIcon={<ExpandMore />}
-                                aria-controls="panel1-content"
-                                id="panel1-header"
-                            >
-                                Accordion 1
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                malesuada lacus ex, sit amet blandit leo lobortis eget.
-                            </AccordionDetails>
-                        </Accordion>
+                        {tripDetails ? (
+                            <Accordion>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMore />}
+                                    aria-controls="panel1-content"
+                                    id="panel1-header"
+                                >
+                                    <span style={{ fontWeight: '600', fontSize: '16px' }}>
+                                        {tripDetails.time ? tripDetails.time.slice(0, 5) : ''}
+                                    </span>
+                                    <span style={{ marginLeft: 5, marginRight: 5 }}>•</span>
+                                    <span style={{ fontWeight: '600', fontSize: '16px' }}>
+                                        {tripDetails.routerName}
+                                    </span>
+
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Grid container spacing={3}>
+                                        <Grid size={4}>
+                                            <span style={{ fontSize: '15px', display: 'block' }}>
+                                                Biển số: <span style={{ fontWeight: '600', color: '#0072bc' }}>{tripDetails.licensePlate}</span>
+                                            </span>
+                                            <span style={{ fontSize: '15px', display: 'block' }}>
+                                                Sơ đồ ghế: <span style={{ fontWeight: '600', color: '#0072bc' }}>{tripDetails.seatMap}</span>
+                                            </span>
+                                            <span style={{ fontSize: '15px', display: 'block' }}>
+                                                Khởi hành: <span style={{ fontWeight: '600', color: '#0072bc' }}>{tripDetails.time ? tripDetails.time.slice(0, 5) : ''} - {tripDetails.date ? dayjs(tripDetails.date).format('DD-MM-YYYY') : ''}</span>
+                                            </span>
+                                        </Grid>
+                                        <Grid size={4}>
+                                            <span style={{ fontSize: '15px', display: 'block' }}>
+                                                Tài xế: <span style={{ fontWeight: '600', color: '#0072bc' }}> {tripDetails.user ? tripDetails.user.join(', ') : ''}</span>
+                                            </span>
+                                            <span style={{ fontSize: '15px', display: 'block' }}>
+                                                Số điện thoại xe: <span style={{ fontWeight: '600', color: '#0072bc' }}>{tripDetails.vehcilePhone}</span>
+                                            </span>
+                                        </Grid>
+                                        <Grid size={4}>
+                                            <span style={{ fontSize: '15px', display: 'block' }}>
+                                                Số vé: <span style={{ fontWeight: '600', color: '#0072bc' }}>0</span>
+                                            </span>
+                                            <span style={{ fontSize: '15px', display: 'block' }}>
+                                                Số hàng: <span style={{ fontWeight: '600', color: '#0072bc' }}>0</span>
+                                            </span>
+                                        </Grid>
+                                    </Grid>
+                                    <div>
+                                        <span style={{ fontSize: '15px', display: 'block' }}>
+                                            Đặt chỗ: <span style={{ color: 'black' }}>( VP An Sương: 3 / VP Tân Bình: 5 / VP Buôn Ma Thuột: 9 )</span>
+                                        </span>
+                                    </div>
+
+                                </AccordionDetails>
+                            </Accordion>
+                        ) : (
+                            <LoadingIndicator />
+                        )}
                     </section>
                     <section>
                         <TabContext value={valueTab}>
@@ -199,7 +264,7 @@ export default function BanVe() {
                                 </TabList>
                             </Box>
                             <TabPanel value="1">
-                                <SeatMap selectedItemId={selectedItemId}/>
+                                <SeatMap selectedItemId={selectedItemId} />
                             </TabPanel>
                             <TabPanel value="2">
                                 <TicketList />

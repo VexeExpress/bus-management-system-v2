@@ -1,75 +1,97 @@
 .seat-map {
-    display: flex; 
+    display: flex;
     /* justify-content:space-between; */
-    margin: 20px 0; 
+    /* margin: 20px 0;  */
+    margin: 2px;
 }
 
 .floor-section {
-    flex-grow: 1; /* Để mỗi tầng chiếm 1 phần không gian bằng nhau */
+    flex-grow: 1;
+    /* Để mỗi tầng chiếm 1 phần không gian bằng nhau */
 
-    border-radius: 8px; /* Đường viền mềm mại */
+    border-radius: 8px;
+    /* Đường viền mềm mại */
 }
 
 .seat-row {
-    display: flex; 
-    justify-content: center; 
-    width: 100%; 
-    box-sizing: border-box; /* Đảm bảo chiều rộng bao gồm viền và padding */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    /* Đảm bảo chiều rộng bao gồm viền và padding */
 }
 
 
-.seat {
-    flex: 1 1 0; /* Để thẻ ghế có thể co dãn theo chiều rộng */
-    margin: 5px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    cursor: pointer; 
-    padding: 10px; 
-    border: 1px solid #ccc; 
-    border-radius: 5px; 
-    transition: background-color 0.3s; 
-}
+
+
 .css-13xfq8m-MuiTabPanel-root {
     padding: 0px !important;
 }
+
 .seat-info {
-    display: flex; 
+    display: flex;
     justify-content: space-between;
-    width: 100%; 
+    width: 100%;
 }
-.seat-phone{
+
+.seat-phone {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding-left: 5px;
     padding-right: 5px;
 }
+
 .seat-phone span {
     font-weight: 600;
     font-size: 17px;
     color: black;
     line-height: 17px;
 }
+.seat {
+    flex: 1 1 0;
+    margin: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
 
-.seat.available:hover {
-    background-color: #d4edda; /* Màu nền khi di chuột qua ghế có sẵn */
+
+
+.seat.available {
+    background-color: white; /* Available seat */
 }
 
 .seat.booked {
-    background-color: #f8d7da; /* Màu nền cho ghế đã đặt */
+    background-color: #a36c71;
 }
 
 .seat.empty {
-    background-color: #e2e3e5; /* Màu nền cho ghế trống */
+    background-color: #3975ec;
 }
+
+.seat.selected {
+    border: 2px solid #0072bc; 
+    
+}
+
+
 .seat-from-to {
     display: flex;
-    flex-direction: column; /* Stack 'Điểm đi' and 'Điểm đến' vertically */
+    flex-direction: column;
+    /* Stack 'Điểm đi' and 'Điểm đến' vertically */
     font-size: 12px;
-    color: #666; /* Optional: style text */
-    margin-top: 5px; /* Space between seat-info and seat-from-to */
+    color: #666;
+    /* Optional: style text */
+    margin-top: 5px;
+    /* Space between seat-info and seat-from-to */
 }
-.seat-note{
+
+.seat-note {
     font-size: 15px;
     color: #0072bc;
     margin-top: 5px;
@@ -77,20 +99,60 @@
     line-height: 15px;
     font-weight: 500;
 }
+
 .status-bar {
-    width: 100%; /* Full width or adjust dynamically */
-    height: 5px; /* Height of the bar */
-    background-color: #0072bc; /* Background color for the bar (inactive) */
-    border-radius: 10px; /* Rounded corners */
-    position: relative; /* Allow inner bar to position inside */
+    width: 100%;
+    /* Full width or adjust dynamically */
+    height: 5px;
+    /* Height of the bar */
+    background-color: #0072bc;
+    /* Background color for the bar (inactive) */
+    border-radius: 10px;
+    /* Rounded corners */
+    position: relative;
+    /* Allow inner bar to position inside */
 }
+
 .info-row {
     display: flex;
     margin-top: 5px;
-    justify-content: space-between; 
-    width: 100%; 
+    justify-content: space-between;
+    width: 100%;
 }
+
 .info-row span {
-    font-size: 15px; 
+    font-size: 15px;
 }
+
+.selected-seat-info {
+    position: fixed;
+    bottom: 0;
+    right: 1px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+.slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+
+
+
 
