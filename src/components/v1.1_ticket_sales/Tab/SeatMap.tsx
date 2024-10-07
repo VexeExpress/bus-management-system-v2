@@ -1,6 +1,6 @@
 'use client';
 import { fetchSeatMapById, fetchSeatMapId } from '@/services/seat_map/_v1';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '@/styles/css/seatmap.css'
 import { Autocomplete, Button, Card, Chip, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Tooltip } from '@mui/material';
 import { Delete, Downloading, FileCopy, LocationOn, OpenWith, Restore } from '@mui/icons-material';
@@ -94,6 +94,7 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
 
 
     const [selectedTicket, setSelectedTicket] = useState<number[]>([]);
+    const [showSelectedSeatInfo, setShowSelectedSeatInfo] = useState(false);
 
     const [client, setClient] = useState<Client | null>(null);
     const [connected, setConnected] = useState(false);
@@ -110,12 +111,23 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
                 stompClient.subscribe('/topic/item-updates', (message: IMessage) => {
                     const itemUpdate = JSON.parse(message.body);
                     console.log('Received message:', message.body);
-                    setSelectedTicket((prev) => {
-                        const newSelected = itemUpdate.status === 'selected' 
-                            ? [...prev, itemUpdate.itemId] // Thêm ghế được chọn
-                            : prev.filter(id => id !== itemUpdate.itemId); // Bỏ ghế được bỏ chọn
-                        return newSelected;
-                    });
+
+                    if (itemUpdate.status === 'selected') {
+                        console.log(`Ghế ${itemUpdate.itemId} đã được chọn.`);
+                        // Nếu cần, có thể cập nhật UI để thông báo cho người dùng
+                    } else {
+                        console.log(`Ghế ${itemUpdate.itemId} đã bị bỏ chọn.`);
+                    }
+
+                    // Chỉ cập nhật nếu clientId khớp
+                    if (itemUpdate.clientId !== clientId.current) {
+                        setSelectedTicket((prev) => {
+                            const newSelected = itemUpdate.status === 'selected'
+                                ? [...prev, itemUpdate.itemId] // Thêm ghế được chọn
+                                : prev.filter(id => id !== itemUpdate.itemId); // Bỏ ghế được bỏ chọn
+                            return newSelected;
+                        });
+                    }
                 });
             },
 
@@ -136,18 +148,20 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
             stompClient.deactivate();
         };
     }, []);
+    const clientId = useRef(Date.now());
     const sendMessage = (itemId: number, status: string) => {
         if (client && connected) {
             client.publish({
                 destination: '/app/send',
-                body: JSON.stringify({ itemId, status }),
+                body: JSON.stringify({ itemId, status, clientId: clientId.current }), // Thêm clientId
             });
         }
     };
 
 
 
-    
+
+
 
 
 
@@ -202,9 +216,9 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
                                             setSelectedTicket(prevIds =>
                                                 newIsSelected
                                                     ? [...prevIds, seatId]
-                                                    : prevIds.filter(id => id !== seatId) 
+                                                    : prevIds.filter(id => id !== seatId)
                                             );
-
+                                            setShowSelectedSeatInfo(newIsSelected);
                                             setSelectedSeat({ ...seat, ticketId: seat.id, ticketData: seat.ticket });
                                             sendMessage(seatId, newIsSelected ? 'selected' : 'deselected');
                                         }
@@ -256,7 +270,7 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
     const [selectedValue, setSelectedValue] = useState('');
 
     const renderSelectedSeatInfo = () => {
-        if (selectedTicket.length === 0 || !selectedSeat) return null;
+        if (!showSelectedSeatInfo || selectedTicket.length === 0 || !selectedSeat) return null;
 
 
         return (
@@ -365,7 +379,7 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
 
     return (
         <>
-          
+
 
             <div>Sơ đồ ghế, selected item ID: {selectedItemId}</div>
 
