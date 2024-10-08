@@ -90,7 +90,7 @@ export default function RoutePage() {
     }, [companyId]);
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 , padding: 10}}>
                 <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH TUYẾN</h3>
                 <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
                     Tạo tuyến mới

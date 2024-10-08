@@ -334,27 +334,42 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                                     <span>1.1 Vé hành khách</span>
                                 </ListItemButton>
                             </Link>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.2 Tra cứu thông tin vé</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.3 Báo cáo công nợ đại lý</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.4 Thống kê chuyến theo tài xế</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.5 Báo cáo theo nhân viên</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.6 Báo cáo theo tài xế</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.7 Yêu cầu xuất vé điện tử</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.8 Báo cáo</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/report-detail-ticket" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.2 Tra cứu thông tin vé</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/report-by-agency" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.3 Báo cáo công nợ đại lý</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/report-count-trip-driver" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.4 Thống kê chuyến theo tài xế</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/report-cash-by-user" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.5 Báo cáo theo nhân viên</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/trips-driver-report" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.6 Báo cáo theo tài xế</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/ret" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.7 Yêu cầu xuất vé điện tử</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/report-data-studio" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>1.8 Báo cáo</span>
+                                </ListItemButton>
+                            </Link>
+
                             <ListItemButton sx={{ pl: 4 }}>
                                 <span>1.9 Lệnh vận chuyển điện tử</span>
                             </ListItemButton>
@@ -376,15 +391,21 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </ListItemButton>
                     <Collapse in={open3} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>2.1 Tra cứu hàng hóa</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>2.2 Báo cáo hàng hóa</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>2.3 Hàng hóa theo nhân viên</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/goods" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>2.1 Tra cứu hàng hóa</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/report-goods" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>2.2 Báo cáo hàng hóa</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/goods-by-user" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>2.3 Hàng hóa theo nhân viên</span>
+                                </ListItemButton>
+                            </Link>
                         </List>
                     </Collapse>
                 </List>
@@ -401,33 +422,47 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </ListItemButton>
                     <Collapse in={open4} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.1 Phân tài trung chuyển khách</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.2 Sắp xếp tuyến</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.3 Báo cáo theo tài xế</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.4 Báo cáo trung chuyển</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.5 Thu chi chuyến</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.6 Báo cáo sổ quỹ tiền mặt</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.7 Danh sách chuyến</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.8 Quản lý chuyến</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>3.9 Nhiên liệu</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/assign-transshipment-driver-for-ticket" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.1 Phân tài trung chuyển khách</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/order-route" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.2 Sắp xếp tuyến</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/trips-driver-report" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.3 Báo cáo theo tài xế</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/transshipment-report" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.4 Báo cáo trung chuyển</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/bill-in-trip" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.5 Thu chi chuyến</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/manage-list-trip" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.6 Danh sách chuyến</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/trip-operation" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.7 Quản lý chuyến</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/manage-ingredient" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>3.8 Nhiên liệu</span>
+                                </ListItemButton>
+                            </Link>
+
                         </List>
                     </Collapse>
                 </List>
@@ -444,12 +479,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </ListItemButton>
                     <Collapse in={open5} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>4.1 Mã khuyến mãi</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>4.2 Chính sách hủy vé</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/promotion" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>4.1 Mã khuyến mãi</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/cancel-ticket-policy" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>4.2 Chính sách hủy vé</span>
+                                </ListItemButton>
+                            </Link>
                         </List>
                     </Collapse>
                 </List>
@@ -532,24 +571,37 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </ListItemButton>
                     <Collapse in={open7} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>6.1 Tùy chỉnh in vé</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>6.2 Tùy chỉnh in sơ đồ ghế</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>6.3 Tùy chỉnh in hàng</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>6.4 Cấu hình gửi tin nhắn</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>6.5 Cấu hình gửi gmail</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>6.6 Lệnh vận chuyển hàng hóa</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/print-config-ticket" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>6.1 Tùy chỉnh in vé</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/print-config-seat-map" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>6.2 Tùy chỉnh in sơ đồ ghế</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/print-config-goods" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>6.3 Tùy chỉnh in hàng</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/sms-config-display" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>6.4 Cấu hình gửi tin nhắn</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/config-ticket-email" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>6.5 Cấu hình gửi gmail</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/config-freight-order" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>6.6 Lệnh vận chuyển hàng hóa</span>
+                                </ListItemButton>
+                            </Link>
+
                         </List>
                     </Collapse>
                 </List>
@@ -566,12 +618,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </ListItemButton>
                     <Collapse in={open8} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>7.1 Báo cáo số dư tài khoản</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>7.2 Đăng ký sử dụng VietQR</span>
-                            </ListItemButton>
+                            <Link href="/ticket-01/report-message" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>7.1 Báo cáo số dư tài khoản</span>
+                                </ListItemButton>
+                            </Link>
+                            <Link href="/ticket-01/register-vietqr" passHref className='itemMenu'>
+                                <ListItemButton sx={{ pl: 4 }}>
+                                    <span>7.2 Đăng ký sử dụng VietQR</span>
+                                </ListItemButton>
+                            </Link>
                         </List>
                     </Collapse>
                 </List>

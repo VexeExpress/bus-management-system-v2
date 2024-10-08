@@ -1,3 +1,4 @@
+
 'use client';
 
 import OfficeTable from "@/components/v5.9_office/OfficeTable";
@@ -89,7 +90,7 @@ export default function OfficePage() {
 
         return (
             <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: 10 }}>
                     <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH VĂN PHÒNG</h3>
                     <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
                         Thêm văn phòng

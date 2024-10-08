@@ -129,7 +129,7 @@ export default function UserPage() {
     }, [companyId]);
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: 10 }}>
                 <h3 style={{ margin: 0 }}>DANH SÁCH NHÂN VIÊN</h3>
                 <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
                     Thêm nhân viên
