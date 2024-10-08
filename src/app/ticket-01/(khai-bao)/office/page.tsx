@@ -39,7 +39,7 @@ export default function OfficePage() {
     const handleDeleteOffice = async (officeId: number) => {
         try {
             await deleteOffice(officeId);
-            setOffices((prevOffices) => prevOffices.filter(office => office.id !== officeId)); 
+            setOffices((prevOffices) => prevOffices.filter(office => office.id !== officeId));
             Toast.success('Xóa văn phòng thành công');
         } catch (err: unknown) {
             const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
@@ -69,35 +69,35 @@ export default function OfficePage() {
     }
 
 
-        useEffect(() => {
-            const loadOffices = async () => {
-                setLoading(true);
-                setError(null);
-                try {
-                    const data = await fetchOffices(companyId);
-                    setOffices(data);
-                } catch (error) {
-                    setError((error as Error).message);
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            if (companyId) {
-                loadOffices();
+    useEffect(() => {
+        const loadOffices = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const data = await fetchOffices(companyId);
+                setOffices(data);
+            } catch (error) {
+                setError((error as Error).message);
+            } finally {
+                setLoading(false);
             }
-        }, [companyId]);
+        };
 
-        return (
-            <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: 10 }}>
-                    <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH VĂN PHÒNG</h3>
-                    <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-                        Thêm văn phòng
-                    </Button>
-                </div>
-                <OfficeTable offices={offices} loading={loading} error={error} onDelete={handleDeleteOffice} onEdit={handleEditOffice} />
-                <OfficeModal open={open} onClose={handleClose} companyId={companyId} onAddOffice={handleAddOffice} onUpdateOffice={handleUpdateOffice} editOffice={editOffice} />
+        if (companyId) {
+            loadOffices();
+        }
+    }, [companyId]);
+
+    return (
+        <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: 10 }}>
+                <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH VĂN PHÒNG</h3>
+                <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+                    Thêm văn phòng
+                </Button>
             </div>
-        )
-    }
+            <OfficeTable offices={offices} loading={loading} error={error} onDelete={handleDeleteOffice} onEdit={handleEditOffice} />
+            <OfficeModal open={open} onClose={handleClose} companyId={companyId} onAddOffice={handleAddOffice} onUpdateOffice={handleUpdateOffice} editOffice={editOffice} />
+        </div>
+    )
+}

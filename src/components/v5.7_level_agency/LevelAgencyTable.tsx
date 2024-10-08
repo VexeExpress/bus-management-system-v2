@@ -1,18 +1,18 @@
 'use client';
 
-import { LevelAgency } from "@/types/LevelAgency"; 
+import { LevelAgency } from "@/types/LevelAgency";
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import styles from '@/styles/module/LevelAgencyPage.module.css'; 
+import styles from '@/styles/module/LevelAgencyPage.module.css';
 import LoadingIndicator from "@/lib/loading";
 import { Delete, Mode } from "@mui/icons-material";
 
 const LevelAgencyTable: React.FC<{
-    agencies: LevelAgency[]; 
+    levelAgency: LevelAgency[];
     loading: boolean;
     error: string | null;
     onDelete: (id: number) => void;
     onEdit: (agency: LevelAgency) => void;
-}> = ({ agencies, loading, error, onDelete, onEdit }) => {
+}> = ({ levelAgency, loading, error, onDelete, onEdit }) => {
     const handleDelete = (id: number) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa cấp đại lý này?')) {
             onDelete(id);
@@ -41,10 +41,10 @@ const LevelAgencyTable: React.FC<{
                             <TableCell colSpan={4}>Error: {error}</TableCell>
                         </TableRow>
                     )}
-                    {!loading && !error && agencies.map((agency, index) => (
-                        <TableRow key={`${agency.id}-${index}`} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    {!loading && !error && levelAgency.map((agency, index) => (
+                        <TableRow key={agency.id} >
                             <TableCell>{index + 1}</TableCell>
-                            <TableCell>{agency.levelName}</TableCell> 
+                            <TableCell>{agency.levelName}</TableCell>
                             <TableCell>{agency.quota}</TableCell>
                             <TableCell>
                                 <IconButton color="info" title="Chỉnh sửa" onClick={() => onEdit(agency)}>

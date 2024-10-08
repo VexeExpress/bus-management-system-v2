@@ -40,15 +40,7 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
     const [error, setError] = useState<string | null>(null);
     const [selectedSeat, setSelectedSeat] = useState<any>(null);
     const [selectedItem, setSelectedItem] = useState<number | null>(null);
-    interface OptionType {
-        id: number;
-        label: string;
-    }
-    const options: OptionType[] = [
-        { id: 10, label: 'Ten' },
-        { id: 20, label: 'Twenty' },
-        { id: 30, label: 'Thirty' },
-    ];
+
 
     const getSeatMapId = async () => {
         try {
@@ -166,7 +158,10 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
 
 
 
-
+    const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
+    useEffect(() => {
+        console.log("Các ID đã chọn: ", selectedSeatIds);
+    }, [selectedSeatIds]);
     const renderSeats = () => {
         const seatsByFloor: Record<number, Array<Array<any>>> = {};
         const seatMap = ticketData[0]?.seat?.seatMap || {};
@@ -211,16 +206,27 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
                                     onClick={async () => {
                                         if (seat) {
                                             const seatId = seat.id;
-                                            const newIsSelected = !selectedTicket.includes(seatId);
-                                            console.log("ID: " + seatId);
-                                            setSelectedTicket(prevIds =>
-                                                newIsSelected
-                                                    ? [...prevIds, seatId]
-                                                    : prevIds.filter(id => id !== seatId)
-                                            );
-                                            setShowSelectedSeatInfo(newIsSelected);
-                                            setSelectedSeat({ ...seat, ticketId: seat.id, ticketData: seat.ticket });
-                                            sendMessage(seatId, newIsSelected ? 'selected' : 'deselected');
+                                            const isSelected = selectedTicket.includes(seatId);
+                                            console.log("Selected Seat ID: ", seatId);
+                                            setSelectedSeatIds(prevIds => {
+                                                // If the seat is already selected, remove it. Otherwise, add it.
+                                                return isSelected
+                                                    ? prevIds.filter(id => id !== seatId)
+                                                    : [...prevIds, seatId];
+                                            });
+                                            setSelectedTicket(prevIds => {
+                                                // If already selected, remove the seat ID, otherwise add it
+                                                return isSelected
+                                                    ? prevIds.filter(id => id !== seatId)
+                                                    : [...prevIds, seatId];
+                                            });
+                                            setSelectedSeat({
+                                                ...seat,
+                                                ticketId: seatId,
+                                                ticketData: seat.ticket,
+                                            });
+                                            setShowSelectedSeatInfo(!isSelected);
+                                            sendMessage(seatId, !isSelected ? 'selected' : 'deselected');
                                         }
                                     }}
                                 >
@@ -267,112 +273,177 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
         ));
 
     };
-    const [selectedValue, setSelectedValue] = useState('');
+
+    interface OptionType {
+        id: number;
+        label: string;
+    }
+    const options: OptionType[] = [
+        { id: 10, label: 'Ten' },
+        { id: 20, label: 'Twenty' },
+        { id: 30, label: 'Thirty' },
+    ];
+    const [phone, setPhone] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [pickupPoint, setPickupPoint] = useState('');
+    const [dropoffPoint, setDropoffPoint] = useState('');
+    const [note, setNote] = useState('');
+    const [totalPrice, setTotalPrice] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [selectedValueAgency, setSelectedValueAgency] = useState('');
 
     const renderSelectedSeatInfo = () => {
         if (!showSelectedSeatInfo || selectedTicket.length === 0 || !selectedSeat) return null;
 
 
+        const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+
+            const formData = {
+                phone,
+                fullName,
+                email,
+                pickupPoint,
+                dropoffPoint,
+                note,
+                totalPrice,
+                agency: selectedValueAgency,
+                paymentMethod
+            };
+
+            try {
+                console.log(formData);
+                // Send POST request to your Next.js API route
+                // const response = await fetch('/api/submitBooking', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(formData)
+                // });
+
+                // const result = await response.json();
+                // if (response.ok) {
+                //     alert('Booking successfully submitted');
+                //     // Clear form (optional)
+                //     setPhone('');
+                //     setFullName('');
+                //     setEmail('');
+                //     setPickupPoint('');
+                //     setDropoffPoint('');
+                //     setNote('');
+                //     setTotalPrice('');
+                //     setSelectedValue('');
+                //     setPaymentMethod('');
+                // } else {
+                //     alert('Error submitting booking: ' + result.message);
+                // }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('There was an error submitting the form');
+            }
+        };
+
         return (
             <div className="selected-seat-info slide-up">
-                <span style={{ fontWeight: '600' }}>THÔNG TIN HÀNH KHÁCH</span>
-                <hr />
-                <div style={{ marginBottom: 8 }}>
-                    <TextField style={{ width: '100%' }} id="outlined-basic" label="Điện thoại" variant="outlined" size='small' />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                    <TextField style={{ width: '100%' }} id="outlined-basic" label="Họ và tên" variant="outlined" size='small' />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                    <TextField style={{ width: '100%' }} id="outlined-basic" label="Email" variant="outlined" size='small' />
-                </div>
-                <hr />
-                <div style={{ marginBottom: 8 }}>
-                    <TextField style={{ width: '100%' }} id="outlined-basic" label="Điểm đón" variant="outlined" size='small' />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                    <TextField style={{ width: '100%' }} id="outlined-basic" label="Điểm trả" variant="outlined" size='small' />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                    <TextField style={{ width: '100%' }} id="outlined-basic" label="Ghi chú" multiline maxRows={4} size='small' />
-                </div>
+                <form onSubmit={handleSubmit} >
+                    <span style={{ fontWeight: '600' }}>THÔNG TIN HÀNH KHÁCH</span>
+                    <hr />
+                    <div style={{ marginBottom: 8 }}>
+                        <TextField value={phone} onChange={(e) => setPhone(e.target.value)} style={{ width: '100%' }} id="outlined-basic" label="Điện thoại" variant="outlined" size='small' />
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                        <TextField value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ width: '100%' }} id="outlined-basic" label="Họ và tên" variant="outlined" size='small' />
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                        <TextField value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%' }} id="outlined-basic" label="Email" variant="outlined" size='small' />
+                    </div>
+                    <hr />
+                    <div style={{ marginBottom: 8 }}>
+                        <TextField value={pickupPoint} onChange={(e) => setPickupPoint(e.target.value)} style={{ width: '100%' }} id="outlined-basic" label="Điểm đón" variant="outlined" size='small' />
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                        <TextField value={dropoffPoint} onChange={(e) => setDropoffPoint(e.target.value)} style={{ width: '100%' }} id="outlined-basic" label="Điểm trả" variant="outlined" size='small' />
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                        <TextField value={note} onChange={(e) => setNote(e.target.value)} style={{ width: '100%' }} id="outlined-basic" label="Ghi chú" multiline maxRows={4} size='small' />
+                    </div>
 
-                <hr />
-                <div style={{ marginBottom: 8 }}>
-                    <TextField style={{ width: '100%' }} id="outlined-basic" label="Tổng tiền" multiline maxRows={4} size='small' />
-                </div>
-                <Autocomplete
-                    style={{ marginBottom: 8 }}
-                    options={options}
-                    getOptionLabel={(option: OptionType | string) => {
-                        if (typeof option === 'string') {
-                            return option;
-                        }
-                        return option.label;
-                    }}
-                    value={selectedValue}
-                    onChange={(event, newValue) => {
-                        setSelectedValue(newValue ? (typeof newValue === 'string' ? newValue : newValue.label) : '');
-                    }}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Đại lý" variant="outlined" size="small" />
-                    )}
-                    freeSolo
-                />
-                <FormControl fullWidth style={{ marginBottom: 15 }}>
-                    <InputLabel id="demo-simple-select-label" size='small'>Hình thức thanh toán</InputLabel>
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        label="Hình thức thanh toán"
-                        size='small'
-                    >
-                        <MenuItem value={1}>Thanh toán tại quầy</MenuItem>
-                        <MenuItem value={2}>Thanh toán trên xe</MenuItem>
-                        <MenuItem value={3}>Chuyển khoản</MenuItem>
-                        <MenuItem value={4} disabled>Online</MenuItem>
-                        <MenuItem value={5}>Đại lý thu tiền</MenuItem>
-                    </Select>
-                </FormControl>
-                <div style={{ marginBottom: 30 }}>
-                    <Tooltip title="Sao chép vé" arrow >
-                        <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Sao chép" >
-                            <FileCopy />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Di chuyển vé" arrow>
-                        <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Di chuyển" >
-                            <OpenWith />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Lịch sử vé" arrow>
-                        <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Lịch sử">
-                            <Restore />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Chuyển xuống danh sách chờ xử lý" arrow>
-                        <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Chờ xử lý" >
-                            <Downloading />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Hủy vé" arrow>
-                        <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Hủy vé">
-                            <Delete />
-                        </IconButton>
-                    </Tooltip>
+                    <hr />
+                    <div style={{ marginBottom: 8 }}>
+                        <TextField value={totalPrice} onChange={(e) => setTotalPrice(e.target.value)} style={{ width: '100%' }} id="outlined-basic" label="Tổng tiền" multiline maxRows={4} size='small' />
+                    </div>
+                    <Autocomplete
+                        options={options}
+                        getOptionLabel={(option: OptionType | string) => {
+                            if (typeof option === 'string') {
+                                return option;
+                            }
+                            return option.label;
+                        }}
+                        value={selectedValueAgency}
+                        onChange={(event, newValue) => {
+                            setSelectedValueAgency(newValue ? (typeof newValue === 'string' ? newValue : newValue.label) : '');
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Đại lý" variant="outlined" size="small" />}
+                        freeSolo
+                        style={{ marginBottom: 8 }}
+                    />
 
-                </div>
-                <p>ID: {selectedSeat.id}</p>
-                <p>Ghế: {selectedSeat.name}</p>
-                <p>Trạng thái: {selectedSeat.status ? 'Có sẵn' : 'Đã đặt'}</p>
-                <p>{selectedTicket}</p>
-                <div >
-                    <Button style={{ marginRight: 5, backgroundColor: '#0072bc' }} variant="contained">Cập nhật</Button>
-                    <Button style={{ marginRight: 5, backgroundColor: '#CC9900' }} variant="contained">In vé</Button>
-                </div>
+                    <FormControl fullWidth style={{ marginBottom: 15 }}>
+                        <InputLabel id="demo-simple-select-label" size='small'>Hình thức thanh toán</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            label="Hình thức thanh toán"
+                            size='small'
+                            value={paymentMethod}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                        >
+                            <MenuItem value="counter">Thanh toán tại quầy</MenuItem>
+                            <MenuItem value="bus">Thanh toán trên xe</MenuItem>
+                            <MenuItem value="bank">Chuyển khoản</MenuItem>
+                            <MenuItem value="agent">Đại lý thu tiền</MenuItem>
+                            <MenuItem value="online" disabled>Online</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <div style={{ marginBottom: 30 }}>
+                        <Tooltip title="Sao chép vé" arrow >
+                            <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Sao chép" >
+                                <FileCopy />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Di chuyển vé" arrow>
+                            <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Di chuyển" >
+                                <OpenWith />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Lịch sử vé" arrow>
+                            <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Lịch sử">
+                                <Restore />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Chuyển xuống danh sách chờ xử lý" arrow>
+                            <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Chờ xử lý" >
+                                <Downloading />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Hủy vé" arrow>
+                            <IconButton style={{ backgroundColor: '#EEEEEE', marginRight: 5 }} color="primary" aria-label="Hủy vé">
+                                <Delete />
+                            </IconButton>
+                        </Tooltip>
 
-
+                    </div>
+                    <p>ID: {selectedSeat.id}</p>
+                    <p>Ghế: {selectedSeat.name}</p>
+                    <p>{selectedTicket}</p>
+                    <div >
+                        <Button type="submit" style={{ marginRight: 5, backgroundColor: '#0072bc' }} variant="contained">Cập nhật</Button>
+                        <Button style={{ marginRight: 5, backgroundColor: '#CC9900' }} variant="contained">In vé</Button>
+                    </div>
+                </form>
             </div>
+
         );
     };
 

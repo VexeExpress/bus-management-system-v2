@@ -1,5 +1,7 @@
 export interface LevelAgency {
-    id: number;        
-    levelName: string;  
-    quota: number;       
+    id: number;
+    levelName: string;
+    quota: number;
+    companyId: number;
 }
+

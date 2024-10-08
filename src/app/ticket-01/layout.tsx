@@ -354,7 +354,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                                     <span>1.5 Báo cáo theo nhân viên</span>
                                 </ListItemButton>
                             </Link>
-                            <Link href="/ticket-01/trips-driver-report" passHref className='itemMenu'>
+                            <Link href="/ticket-01/trips-driver-report-02" passHref className='itemMenu'>
                                 <ListItemButton sx={{ pl: 4 }}>
                                     <span>1.6 Báo cáo theo tài xế</span>
                                 </ListItemButton>

@@ -2,102 +2,114 @@
 
 import React, { useEffect, useState } from 'react';
 import { LevelAgency } from "@/types/LevelAgency";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
-import styles from '@/styles/module/LevelAgencyPage.module.css'; 
+import { Button, Box, Modal, Typography, TextField } from "@mui/material";
+import styles from '@/styles/module/LevelAgencyPage.module.css';
+const styleModal = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 500,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
 
+    p: 2,
+};
 interface LevelAgencyModalProps {
     open: boolean;
+    companyId: number;
     onClose: () => void;
-    onAdd: (agency: LevelAgency) => void;
-    editAgency: LevelAgency | null;
+    onAdd: (data: any) => void;
+    onUpdate: (data: any) => void;
+    edit: LevelAgency | null;
 }
 
-const LEVEL_OPTIONS = [
-    { value: 'level1', label: 'Level 1' },
-    { value: 'level2', label: 'Level 2' },
-    { value: 'level3', label: 'Level 3' }
-];
-
-const QUOTA_OPTIONS = [
-    { value: 10000, label: '10.000' },
-    { value: 20000, label: '20.000' },
-    { value: 30000, label: '30.000' },
-    { value: 40000, label: '40.000' },
-    { value: 50000, label: '50.000' }
-];
-
-const LevelAgencyModal: React.FC<LevelAgencyModalProps> = ({ open, onClose, onAdd, editAgency }) => {
+const LevelAgencyModal: React.FC<LevelAgencyModalProps> = ({ open, onClose, onAdd, edit, companyId, onUpdate }) => {
     const [levelName, setLevelName] = useState<string>('');
-    const [quota, setQuota] = useState<number>(10000);
+    const [quota, setQuota] = useState<number | string>(0);
 
     useEffect(() => {
-        if (editAgency) {
-            setLevelName(editAgency.levelName);
-            setQuota(editAgency.quota);
+        if (edit) {
+            setLevelName(edit.levelName);
+            setQuota(edit.quota);
         } else {
-            resetForm();
+            setLevelName('');
+            setQuota(0);
         }
-    }, [editAgency]);
+    }, [edit]);
 
-    const resetForm = () => {
-        setLevelName('');
-        setQuota(10000);
-    };
-
-    const handleSubmit = () => {
-        const agency: LevelAgency = {
-            id: editAgency?.id || 0,
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        const data = {
             levelName,
             quota,
+            companyId: companyId,
         };
-        console.log('Dữ liệu agency:', agency);
-        onAdd(agency);
-        resetForm();
+
+        if (edit) {
+            onUpdate({ ...data, id: edit.id });
+        } else {
+            onAdd(data);
+        }
         onClose();
+    };
+    const handleQuotaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value === '' || !isNaN(Number(value))) {
+            setQuota(value === '' ? '' : Number(value));
+        }
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth className={styles.modal}>
-            <DialogTitle>{editAgency ? 'Chỉnh sửa Cấp Đại Lý' : 'Thêm Cấp Đại Lý'}</DialogTitle>
-            <DialogContent>
-                <FormControl fullWidth margin="normal">
-                    <InputLabel id="level-select-label">Cấp Đại Lý</InputLabel>
-                    <Select
-                        labelId="level-select-label"
-                        value={levelName}
-                        onChange={(e) => setLevelName(e.target.value)}
-                    >
-                        {LEVEL_OPTIONS.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <InputLabel id="quota-select-label">Định Mức</InputLabel>
-                    <Select
-                        labelId="quota-select-label"
-                        value={quota}
-                        onChange={(e) => setQuota(Number(e.target.value))}
-                    >
-                        {QUOTA_OPTIONS.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color="primary">
-                    Hủy
-                </Button>
-                <Button onClick={handleSubmit} color="primary">
-                    {editAgency ? 'Cập Nhật' : 'Thêm'}
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <Modal
+            open={open}
+            onClose={onClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={styleModal}>
+                <Typography className={styles.titleModal} variant="h6" component="h2" gutterBottom>
+                    {edit ? 'CẬP NHẬT CẤP ĐẠI LÝ' : 'THÊM CẤP ĐẠI LÝ'}
+                </Typography>
+
+                <form onSubmit={handleSubmit} style={{ padding: 20 }}>
+                    <div>
+                        <span>Cấp đại lý</span>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            className={styles.inputForm}
+                            name="levelName"
+                            size="small"
+                            value={levelName}
+                            onChange={(e) => setLevelName(e.target.value)}
+                        />
+                        <span>Định mức</span>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            className={styles.inputForm}
+                            name="quota"
+                            size="small"
+                            value={quota}
+                            onChange={handleQuotaChange}
+
+                        />
+                    </div>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+                        <Button onClick={onClose} color="primary" variant="outlined" style={{ marginRight: 10 }}>
+                            Hủy
+                        </Button>
+                        <Button type="submit" variant="contained" color="primary">
+                            {edit ? 'Cập nhật' : 'Thêm'}
+                        </Button>
+                    </Box>
+                </form>
+            </Box>
+        </Modal>
     );
 };
 

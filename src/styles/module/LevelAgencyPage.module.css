@@ -1,24 +1,18 @@
-.container {
-    padding: 20px;
+.titleModal{
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-right: 20px;
+    font-family: 'Rounded';
 }
 
-.title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
+.inputForm{
+    margin-top: 1px !important;
+    font-family: 'Rounded';
+    margin-bottom: 5px;
 }
-
-
-.tileTable {
-    font-family: 'Rounded', sans-serif; 
+.tileTable{
+    font-family: 'Rounded';
     font-weight: 600;
     color: black;
     font-size: 15px;
-}
-
-.modal {
-    .MuiDialog-paper {
-        width: 600px; 
-        max-width: 100%;
-    }
 }
