@@ -9,6 +9,7 @@ import { Delete, Mode } from "@mui/icons-material";
 import { Office } from "@/types/Office";
 
 
+
 const OfficeTable: React.FC<{
     offices: Office[];
     loading: boolean;
@@ -26,6 +27,7 @@ const OfficeTable: React.FC<{
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
+
                     <TableRow>
                         <TableCell><span className={styles.tileTable}>STT</span></TableCell>
                         <TableCell><span className={styles.tileTable}>Tên chi nhánh</span></TableCell>
