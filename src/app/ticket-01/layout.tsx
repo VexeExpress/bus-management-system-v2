@@ -21,6 +21,9 @@ import Link from 'next/link';
 import '@/styles/css/global.css'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { PersistGate } from 'redux-persist/integration/react';
+import { Provider, useSelector } from 'react-redux';
+import store, { persistor, RootState } from '@/redux/store';
 const drawerWidth = 260;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -238,405 +241,409 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
 
 
-
+    const username = useSelector((state: RootState) => state.auth.user?.name);
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed" open={open}>
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={[
-                            {
-                                marginRight: 5,
-                            },
-                            open && { display: 'none' },
-                        ]}
-                    >
-                        <MenuIcon />
-                    </IconButton>
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    <AppBar position="fixed" open={open}>
+                        <Toolbar>
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                onClick={handleDrawerOpen}
+                                edge="start"
+                                sx={[
+                                    {
+                                        marginRight: 5,
+                                    },
+                                    open && { display: 'none' },
+                                ]}
+                            >
+                                <MenuIcon />
+                            </IconButton>
 
-                    <Paper
-                        component="form"
-                        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 350, borderRadius: 20, height: 40, backgroundColor: '#f1f1f1', boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.23)' }}
-                    >
-                        <IconButton sx={{ p: '10px' }} aria-label="menu">
-                            <Search />
-                        </IconButton>
-                        <InputBase
-                            sx={{ ml: 1, flex: 1 }}
-                            placeholder="Tìm kiếm theo SĐT"
-                        />
-                    </Paper>
-                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                        <div style={{ paddingRight: 10 }}>
-                            <span>{sessionStorage.getItem('name_user')}</span>
-                        </div>
-                        <div style={{ marginLeft: 10, backgroundColor: '#339900', borderRadius: 5, padding: 5 }}>
-                            <span>TK: 5.000.000 đ</span>
-                        </div>
-                        <Badge badgeContent={4} color="secondary" style={{ marginRight: 10, marginLeft: 20 }}>
-                            <Notifications />
-                        </Badge>
-                        <IconButton color="inherit" aria-label="account" onClick={handleClick}>
-                            <Airplay />
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={() => console.log("Technical support clicked")}>Hỗ trợ kĩ thuật: 0877 717575</MenuItem>
-                            <MenuItem onClick={() => console.log("Remote control clicked")}>Điều khiển từ xa</MenuItem>
-                            <MenuItem onClick={() => console.log("Feedback clicked")}>Gửi phản hồi cho VexeExpress</MenuItem>
-                            <MenuItem onClick={() => console.log("Feedback history clicked")}>Lịch sử phản hồi</MenuItem>
-                        </Menu>
-                        <IconButton color="inherit" aria-label="system" onClick={handleAccountClick}>
-                            <AccountCircle />
-                        </IconButton>
-                        <Menu
-                            anchorEl={accountAnchorEl}
-                            open={Boolean(accountAnchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={handleClose}>Đổi mật khẩu</MenuItem>
-                            <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
-                        </Menu>
+                            <Paper
+                                component="form"
+                                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 350, borderRadius: 20, height: 40, backgroundColor: '#f1f1f1', boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.23)' }}
+                            >
+                                <IconButton sx={{ p: '10px' }} aria-label="menu">
+                                    <Search />
+                                </IconButton>
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Tìm kiếm theo SĐT"
+                                />
+                            </Paper>
+                            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                <div style={{ paddingRight: 10 }}>
+                                    <span>{username || ""}</span>
+                                </div>
+                                <div style={{ marginLeft: 10, backgroundColor: '#339900', borderRadius: 5, padding: 5 }}>
+                                    <span>TK: 5.000.000 đ</span>
+                                </div>
+                                <Badge badgeContent={4} color="secondary" style={{ marginRight: 10, marginLeft: 20 }}>
+                                    <Notifications />
+                                </Badge>
+                                <IconButton color="inherit" aria-label="account" onClick={handleClick}>
+                                    <Airplay />
+                                </IconButton>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem onClick={() => console.log("Technical support clicked")}>Hỗ trợ kĩ thuật: 0877 717575</MenuItem>
+                                    <MenuItem onClick={() => console.log("Remote control clicked")}>Điều khiển từ xa</MenuItem>
+                                    <MenuItem onClick={() => console.log("Feedback clicked")}>Gửi phản hồi cho VexeExpress</MenuItem>
+                                    <MenuItem onClick={() => console.log("Feedback history clicked")}>Lịch sử phản hồi</MenuItem>
+                                </Menu>
+                                <IconButton color="inherit" aria-label="system" onClick={handleAccountClick}>
+                                    <AccountCircle />
+                                </IconButton>
+                                <Menu
+                                    anchorEl={accountAnchorEl}
+                                    open={Boolean(accountAnchorEl)}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem onClick={handleClose}>Đổi mật khẩu</MenuItem>
+                                    <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+                                </Menu>
+                            </Box>
+                        </Toolbar>
+                    </AppBar>
+
+                    <Drawer variant="permanent" open={open}>
+                        <DrawerHeader>
+                            <IconButton onClick={handleDrawerClose}>
+                                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                            </IconButton>
+                        </DrawerHeader>
+                        <Divider />
+                        <List>
+                            <ListItemButton onClick={handleClick2} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemIcon>
+                                        <ConfirmationNumber />
+                                    </ListItemIcon>
+                                    <span>Hành khách</span>
+                                </div>
+                                {open2 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+
+                            <Collapse in={open2} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <Link href="/ticket-01/ticket-sales" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.1 Vé hành khách</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/report-detail-ticket" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.2 Tra cứu thông tin vé</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/report-by-agency" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.3 Báo cáo công nợ đại lý</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/report-count-trip-driver" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.4 Thống kê chuyến theo tài xế</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/report-cash-by-user" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.5 Báo cáo theo nhân viên</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/trips-driver-report-02" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.6 Báo cáo theo tài xế</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/ret" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.7 Yêu cầu xuất vé điện tử</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/report-data-studio" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>1.8 Báo cáo</span>
+                                        </ListItemButton>
+                                    </Link>
+
+                                    <ListItemButton sx={{ pl: 4 }}>
+                                        <span>1.9 Lệnh vận chuyển điện tử</span>
+                                    </ListItemButton>
+                                    <ListItemButton sx={{ pl: 4 }}>
+                                        <span>1.10 Xuất hóa đơn điện tử</span>
+                                    </ListItemButton>
+                                </List>
+                            </Collapse>
+                        </List>
+                        <List>
+                            <ListItemButton onClick={handleClick3} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemIcon>
+                                        <Widgets />
+                                    </ListItemIcon>
+                                    <span>Hàng hóa</span>
+                                </div>
+                                {open3 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open3} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <Link href="/ticket-01/goods" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>2.1 Tra cứu hàng hóa</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/report-goods" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>2.2 Báo cáo hàng hóa</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/goods-by-user" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>2.3 Hàng hóa theo nhân viên</span>
+                                        </ListItemButton>
+                                    </Link>
+                                </List>
+                            </Collapse>
+                        </List>
+
+                        <List>
+                            <ListItemButton onClick={handleClick4} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemIcon>
+                                        <Leaderboard />
+                                    </ListItemIcon>
+                                    <span>Điều hành</span>
+                                </div>
+                                {open4 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open4} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <Link href="/ticket-01/assign-transshipment-driver-for-ticket" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.1 Phân tài trung chuyển khách</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/order-route" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.2 Sắp xếp tuyến</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/trips-driver-report" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.3 Báo cáo theo tài xế</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/transshipment-report" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.4 Báo cáo trung chuyển</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/bill-in-trip" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.5 Thu chi chuyến</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/manage-list-trip" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.6 Danh sách chuyến</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/trip-operation" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.7 Quản lý chuyến</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/manage-ingredient" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>3.8 Nhiên liệu</span>
+                                        </ListItemButton>
+                                    </Link>
+
+                                </List>
+                            </Collapse>
+                        </List>
+
+                        <List>
+                            <ListItemButton onClick={handleClick5} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemIcon>
+                                        <InboxIcon />
+                                    </ListItemIcon>
+                                    <span>Quản lý</span>
+                                </div>
+                                {open5 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open5} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <Link href="/ticket-01/promotion" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>4.1 Mã khuyến mãi</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/cancel-ticket-policy" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>4.2 Chính sách hủy vé</span>
+                                        </ListItemButton>
+                                    </Link>
+                                </List>
+                            </Collapse>
+                        </List>
+
+                        <List>
+                            <ListItemButton onClick={handleClick6} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemIcon>
+                                        <EditNote />
+                                    </ListItemIcon>
+                                    <span>Khai báo</span>
+                                </div>
+                                {open6 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open6} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <Link href="/ticket-01/user" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.1 Nhân viên</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/point" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.2 Điểm dừng</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/route" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.3 Tuyến</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/seat-map" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.4 Sơ đồ ghế</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/vehicle" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.5 Phương tiện</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/plan-for-trip" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.6 Lịch chạy</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/level-agency" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.7 Cấp đại lý</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/agency" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.8 Đại lý</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/office" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.9 Văn phòng</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/telecom-number" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>5.10 Số máy tổng đài</span>
+                                        </ListItemButton>
+                                    </Link>
+                                </List>
+                            </Collapse>
+                        </List>
+
+                        <List>
+                            <ListItemButton onClick={handleClick7} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemIcon>
+                                        <Camera />
+                                    </ListItemIcon>
+                                    <span>Hệ thống</span>
+                                </div>
+                                {open7 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open7} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <Link href="/ticket-01/print-config-ticket" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>6.1 Tùy chỉnh in vé</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/print-config-seat-map" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>6.2 Tùy chỉnh in sơ đồ ghế</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/print-config-goods" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>6.3 Tùy chỉnh in hàng</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/sms-config-display" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>6.4 Cấu hình gửi tin nhắn</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/config-ticket-email" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>6.5 Cấu hình gửi gmail</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/config-freight-order" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>6.6 Lệnh vận chuyển hàng hóa</span>
+                                        </ListItemButton>
+                                    </Link>
+
+                                </List>
+                            </Collapse>
+                        </List>
+
+                        <List>
+                            <ListItemButton onClick={handleClick8} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemIcon>
+                                        <PanTool />
+                                    </ListItemIcon>
+                                    <span>CSKH</span>
+                                </div>
+                                {open8 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open8} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <Link href="/ticket-01/report-message" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>7.1 Báo cáo số dư tài khoản</span>
+                                        </ListItemButton>
+                                    </Link>
+                                    <Link href="/ticket-01/register-vietqr" passHref className='itemMenu'>
+                                        <ListItemButton sx={{ pl: 4 }}>
+                                            <span>7.2 Đăng ký sử dụng VietQR</span>
+                                        </ListItemButton>
+                                    </Link>
+                                </List>
+                            </Collapse>
+                        </List>
+
+                    </Drawer>
+                    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                        <DrawerHeader />
+                        {children}
                     </Box>
-                </Toolbar>
-            </AppBar>
-
-            <Drawer variant="permanent" open={open}>
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    <ListItemButton onClick={handleClick2} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ListItemIcon>
-                                <ConfirmationNumber />
-                            </ListItemIcon>
-                            <span>Hành khách</span>
-                        </div>
-                        {open2 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-
-                    <Collapse in={open2} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <Link href="/ticket-01/ticket-sales" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.1 Vé hành khách</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/report-detail-ticket" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.2 Tra cứu thông tin vé</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/report-by-agency" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.3 Báo cáo công nợ đại lý</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/report-count-trip-driver" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.4 Thống kê chuyến theo tài xế</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/report-cash-by-user" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.5 Báo cáo theo nhân viên</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/trips-driver-report-02" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.6 Báo cáo theo tài xế</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/ret" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.7 Yêu cầu xuất vé điện tử</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/report-data-studio" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>1.8 Báo cáo</span>
-                                </ListItemButton>
-                            </Link>
-
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.9 Lệnh vận chuyển điện tử</span>
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <span>1.10 Xuất hóa đơn điện tử</span>
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
-                </List>
-                <List>
-                    <ListItemButton onClick={handleClick3} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ListItemIcon>
-                                <Widgets />
-                            </ListItemIcon>
-                            <span>Hàng hóa</span>
-                        </div>
-                        {open3 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={open3} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <Link href="/ticket-01/goods" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>2.1 Tra cứu hàng hóa</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/report-goods" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>2.2 Báo cáo hàng hóa</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/goods-by-user" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>2.3 Hàng hóa theo nhân viên</span>
-                                </ListItemButton>
-                            </Link>
-                        </List>
-                    </Collapse>
-                </List>
-
-                <List>
-                    <ListItemButton onClick={handleClick4} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ListItemIcon>
-                                <Leaderboard />
-                            </ListItemIcon>
-                            <span>Điều hành</span>
-                        </div>
-                        {open4 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={open4} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <Link href="/ticket-01/assign-transshipment-driver-for-ticket" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.1 Phân tài trung chuyển khách</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/order-route" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.2 Sắp xếp tuyến</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/trips-driver-report" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.3 Báo cáo theo tài xế</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/transshipment-report" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.4 Báo cáo trung chuyển</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/bill-in-trip" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.5 Thu chi chuyến</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/manage-list-trip" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.6 Danh sách chuyến</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/trip-operation" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.7 Quản lý chuyến</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/manage-ingredient" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>3.8 Nhiên liệu</span>
-                                </ListItemButton>
-                            </Link>
-
-                        </List>
-                    </Collapse>
-                </List>
-
-                <List>
-                    <ListItemButton onClick={handleClick5} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ListItemIcon>
-                                <InboxIcon />
-                            </ListItemIcon>
-                            <span>Quản lý</span>
-                        </div>
-                        {open5 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={open5} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <Link href="/ticket-01/promotion" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>4.1 Mã khuyến mãi</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/cancel-ticket-policy" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>4.2 Chính sách hủy vé</span>
-                                </ListItemButton>
-                            </Link>
-                        </List>
-                    </Collapse>
-                </List>
-
-                <List>
-                    <ListItemButton onClick={handleClick6} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ListItemIcon>
-                                <EditNote />
-                            </ListItemIcon>
-                            <span>Khai báo</span>
-                        </div>
-                        {open6 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={open6} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <Link href="/ticket-01/user" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.1 Nhân viên</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/point" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.2 Điểm dừng</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/route" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.3 Tuyến</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/seat-map" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.4 Sơ đồ ghế</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/vehicle" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.5 Phương tiện</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/plan-for-trip" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.6 Lịch chạy</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/level-agency" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.7 Cấp đại lý</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/agency" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.8 Đại lý</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/office" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.9 Văn phòng</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/telecom-number" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>5.10 Số máy tổng đài</span>
-                                </ListItemButton>
-                            </Link>
-                        </List>
-                    </Collapse>
-                </List>
-
-                <List>
-                    <ListItemButton onClick={handleClick7} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ListItemIcon>
-                                <Camera />
-                            </ListItemIcon>
-                            <span>Hệ thống</span>
-                        </div>
-                        {open7 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={open7} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <Link href="/ticket-01/print-config-ticket" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>6.1 Tùy chỉnh in vé</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/print-config-seat-map" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>6.2 Tùy chỉnh in sơ đồ ghế</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/print-config-goods" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>6.3 Tùy chỉnh in hàng</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/sms-config-display" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>6.4 Cấu hình gửi tin nhắn</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/config-ticket-email" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>6.5 Cấu hình gửi gmail</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/config-freight-order" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>6.6 Lệnh vận chuyển hàng hóa</span>
-                                </ListItemButton>
-                            </Link>
-
-                        </List>
-                    </Collapse>
-                </List>
-
-                <List>
-                    <ListItemButton onClick={handleClick8} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <ListItemIcon>
-                                <PanTool />
-                            </ListItemIcon>
-                            <span>CSKH</span>
-                        </div>
-                        {open8 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={open8} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <Link href="/ticket-01/report-message" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>7.1 Báo cáo số dư tài khoản</span>
-                                </ListItemButton>
-                            </Link>
-                            <Link href="/ticket-01/register-vietqr" passHref className='itemMenu'>
-                                <ListItemButton sx={{ pl: 4 }}>
-                                    <span>7.2 Đăng ký sử dụng VietQR</span>
-                                </ListItemButton>
-                            </Link>
-                        </List>
-                    </Collapse>
-                </List>
-
-            </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <DrawerHeader />
-                {children}
-            </Box>
+                </PersistGate>
+            </Provider>
         </Box>
     );
 }

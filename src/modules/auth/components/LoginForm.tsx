@@ -3,7 +3,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import useAuth from '../hook/useAuth';
-import { login } from '../redux/authSlice';
+import { login } from '../../../redux/authSlice';
 
 
 interface FormData {
@@ -22,6 +22,7 @@ const LoginForm = () => {
                 console.log("Dispatching data:", response);
                 dispatch(login({ id: response.id, name: response.name, companyId: response.companyId }));
             }
+
 
         } catch (error) {
             console.error("Login failed:", error);
