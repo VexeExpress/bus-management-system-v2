@@ -27,7 +27,6 @@ export default function OfficePage() {
     };
 
     const handleEdit = (office: OfficeData) => {
-        console.log("Editing office:", office);
         setInitialData(office);
         setOpen(true);
     };
