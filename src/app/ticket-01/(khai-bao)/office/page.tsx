@@ -1,103 +1,72 @@
-
 'use client';
-
-import OfficeTable from "@/components/v5.9_office/OfficeTable";
 import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import OfficeModal from '@/components/v5.9_office/OfficeModal';
-import { createOffice, deleteOffice, fetchOffices, updateOffice } from "@/services/office/_v1";
-import { Office } from "@/types/Office";
-import Toast from "@/lib/toast";
+import React, { useState } from "react";
+import TableOffice from "@/modules/office/components/TableOffice";
+import useOffices from "@/modules/office/hook/useOffices";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import LoadingIndicator from "@/lib/loading";
+import ModalOffice from "@/modules/office/components/ModalOffice";
+import { OfficeData } from "@/modules/office/types/OfficeData";
+import { useDeleteOffice } from "@/modules/office/hook/useDeleteOffice";
+import useManageOffices from "@/modules/office/hook/useManageOffices";
 
 
 export default function OfficePage() {
+    const headers = ['STT', 'Tên văn phòng', 'Mã văn phòng', 'Điện thoại', 'Địa chỉ', 'Ghi chú', 'Tùy chọn'];
+    const companyId = useSelector((state: RootState) => state.auth.user?.companyId);
+    const { offices, loading, error, setOffices } = useOffices(companyId);
     const [open, setOpen] = useState(false);
-    const [offices, setOffices] = useState<Office[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [editOffice, setEditOffice] = useState<Office | null>(null);
-    const handleOpen = () => setOpen(true);
-    const companyId = Number(sessionStorage.getItem('company_id'));
+    const [initialData, setInitialData] = useState<OfficeData | null>(null);
+    const { handleSubmit } = useManageOffices();
 
-    const handleAddOffice = async (newOfficeData: Office) => {
-        try {
-            console.log("Data: " + JSON.stringify(newOfficeData));
-            const newOffice = await createOffice(newOfficeData);
-            Toast.success("Thêm văn phòng thành công")
-            setOffices((prevOffices) => [...prevOffices, newOffice]);
-        } catch (err: unknown) {
-            if (typeof err === 'string') {
-                console.log(err);
-                Toast.error(err);
-            } else if (err instanceof Error) {
-                console.log(err.message);
-                Toast.error(err.message);
-            }
-        }
-    };
-    const handleDeleteOffice = async (officeId: number) => {
-        try {
-            await deleteOffice(officeId);
-            setOffices((prevOffices) => prevOffices.filter(office => office.id !== officeId));
-            Toast.success('Xóa văn phòng thành công');
-        } catch (err: unknown) {
-            const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
-            Toast.error(message);
-        }
-    };
-    const handleEditOffice = (office: Office) => {
-        setEditOffice(office);
+    const handleOpen = () => {
+        setInitialData(null);
         setOpen(true);
     };
-    const handleClose = () => {
-        setOpen(false);
-        setEditOffice(null);
+
+    const handleEdit = (office: OfficeData) => {
+        console.log("Editing office:", office);
+        setInitialData(office);
+        setOpen(true);
     };
-    const handleUpdateOffice = async (updatedOfficeData: Office) => {
-        try {
-            await updateOffice(updatedOfficeData);
-            setOffices((prevOffices) =>
-                prevOffices.map(office => (office.id === updatedOfficeData.id ? updatedOfficeData : office))
-            );
-            Toast.info('Cập nhật thành công');
-            handleClose();
-        } catch (err: unknown) {
-            const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
-            Toast.error(message);
-        };
-    }
 
-
-    useEffect(() => {
-        const loadOffices = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const data = await fetchOffices(companyId);
-                setOffices(data);
-            } catch (error) {
-                setError((error as Error).message);
-            } finally {
-                setLoading(false);
+    const { handleDeleteOffice } = useDeleteOffice();
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa văn phòng này không?")) {
+            const success = await handleDeleteOffice(id);
+            if (success) {
+                setOffices((prevData) => prevData.filter(office => office.id !== id));
             }
-        };
-
-        if (companyId) {
-            loadOffices();
         }
-    }, [companyId]);
+    };
 
+    const handleFormSubmit = async (data: OfficeData) => {
+        await handleSubmit(data, initialData ?? undefined, (office: OfficeData) => {
+            if (initialData) {
+                setOffices((prevOffices) =>
+                    prevOffices.map((o) => (o.id === office.id ? office : o))
+                );
+            } else {
+                setOffices((prevOffices) => [...prevOffices, office]);
+            }
+        });
+    };
+    
+    
+    if (loading) return <><LoadingIndicator /></>;
+    if (error) return <div>{error}</div>;
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: 10 }}>
-                <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH VĂN PHÒNG</h3>
+        <div className="p-0">
+            <div className="flex justify-between items-center mb-2 p-2">
+                <span className="m-0 font-rounded font-semibold text-[20px]">DANH SÁCH VĂN PHÒNG</span>
                 <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
                     Thêm văn phòng
                 </Button>
             </div>
-            <OfficeTable offices={offices} loading={loading} error={error} onDelete={handleDeleteOffice} onEdit={handleEditOffice} />
-            <OfficeModal open={open} onClose={handleClose} companyId={companyId} onAddOffice={handleAddOffice} onUpdateOffice={handleUpdateOffice} editOffice={editOffice} />
+            <TableOffice headers={headers} data={offices} onEdit={handleEdit} onDelete={handleDelete} />
+            <ModalOffice open={open} onClose={() => setOpen(false)} onSubmit={handleFormSubmit} initialData={initialData} />
         </div>
     )
 }

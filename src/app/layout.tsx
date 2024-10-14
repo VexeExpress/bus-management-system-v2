@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/font.css';
 import { PersistGate } from 'redux-persist/integration/react';
-
+import '../styles/css/global.css';
 // Xuất metadata từ Server Component
 // export const metadata: Metadata = {
 //   title: 'VexeExpress',

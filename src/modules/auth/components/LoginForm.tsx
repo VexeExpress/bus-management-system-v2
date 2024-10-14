@@ -33,24 +33,24 @@ const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '20px', borderRadius: '10px', textAlign: 'left', marginTop: '20px' }}>
             <div>
-                <label style={{ display: 'block', color: '#0a2e5c', fontWeight: '600', fontSize: '14px' }}>Tài khoản</label>
+            <label className="block text-[#0a2e5c] font-semibold text-[14px]">Tài khoản</label>
                 <input
-                    style={{ width: '100%', padding: '10px', marginTop: '8px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }}
+                     className="w-full p-2 mt-2 box-border border border-gray-300 rounded-md"
                     type="text"
                     {...register('username', { required: '* Vui lòng nhập tài khoản' })}
                 />
-                {errors.username && <span style={{ color: 'red', fontSize: '13px' }}>{errors.username.message}</span>}
+                {errors.username && <span className="text-red-500 text-[13px]">{errors.username.message}</span>}
             </div>
             <div>
-                <label style={{ display: 'block', color: '#0a2e5c', fontWeight: '600', fontSize: '14px', marginTop: '10px' }}>Mật khẩu</label>
+                <label className="block text-[#0a2e5c] font-semibold text-[14px] mt-3">Mật khẩu</label>
                 <input
-                    style={{ width: '100%', padding: '10px', marginTop: '8px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }}
+                    className="w-full p-2 mt-2 box-border border border-gray-300 rounded-md"
                     type="password"
                     {...register('password', { required: '* Vui lòng nhập mật khẩu' })}
                 />
-                {errors.password && <span style={{ color: 'red', fontSize: '13px' }}>{errors.password.message}</span>}
+                {errors.password && <span className="text-red-500 text-[13px]">{errors.password.message}</span>}
             </div>
-            <button type="submit" style={{ width: '100%', backgroundColor: '#0072bc', color: 'white', padding: '14px 20px', margin: '8px 0', border: 'none', borderRadius: '4px', fontSize: '16px', display: 'inline', marginTop: '30px', fontFamily: 'Rounded' }}>Đăng Nhập</button>
+            <button type="submit" className="w-full bg-[#0072bc] text-white py-3 px-5 my-2 border-none rounded-md text-[16px] inline mt-[30px] font-rounded">Đăng Nhập</button>
         </form>
     );
 };

@@ -1,43 +1,40 @@
-import { useEffect, useState } from "react";
-import { SelectData } from "../types/SelectData";
-import { getListOfficeByCompanyId } from '../api/officeAPI';
 import Toast from "@/lib/toast";
+import { useEffect, useState } from "react";
+import { getListOfficeDetailByCompanyId } from "../api/officeAPI";
 
 const useOffices = (companyId: number | undefined) => {
-    const [offices, setOffices] = useState<SelectData[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<Error | null>(null);
+    const [offices, setOffices] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchOffices = async () => {
-            console.log("Fetching offices for companyId:", companyId);
             if (!companyId) {
                 setLoading(false);
                 console.log("No companyId provided.");
                 Toast.error("Lỗi tuy vấn dữ liệu công ty")
                 return;
             }
-
             setLoading(true);
             setError(null);
-            console.log("Loading started...");
-
+            
             try {
-                const response = await getListOfficeByCompanyId(companyId);
-                setOffices(response || []);
-                console.log("Data Office: ", response);
-            } catch (err) {
-                Toast.error("Lỗi hệ thống")
-                console.error("Error fetching offices:", err);
-                setError(err as Error);
+                const data = await getListOfficeDetailByCompanyId(companyId);
+                setOffices(data);
+                console.log("Data Office from useOffice:", data);
+            } catch (error) {
+                Toast.error("Lỗi hệ thống");
+                setError((error as Error).message || "Đã xảy ra lỗi");
+                console.error("Error fetching offices:", error);
             } finally {
                 setLoading(false);
-                console.log("Loading finished.");
             }
         };
 
         fetchOffices();
     }, [companyId]);
-    return { offices, loading, error };
-}
+
+    return { offices, loading, error, setOffices };
+};
+
 export default useOffices;
