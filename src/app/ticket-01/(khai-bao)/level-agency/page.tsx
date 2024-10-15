@@ -1,110 +1,65 @@
 'use client';
-import LevelAgencyTable from '@/components/v5.7_level_agency/LevelAgencyTable';
-import LevelAgencyModal from '@/components/v5.7_level_agency/LevelAgencyModal';
-import { useEffect, useState } from 'react';
-import { LevelAgency } from "@/types/LevelAgency";
+
+import LoadingIndicator from "@/lib/loading";
+import ModalLevelAgency from "@/modules/level_agency/components/ModalLevelAgency";
+import TableLevelAgency from "@/modules/level_agency/components/TableLevelAgency";
+import useLevelAgency from "@/modules/level_agency/hook/useLevelAgency";
+import useManageLevelAgency from "@/modules/level_agency/hook/useManageLevelAgency";
+import { LevelAgencyData } from "@/modules/level_agency/types/LevelAgencyData";
+import { RootState } from "@/redux/store";
+import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { Add } from '@mui/icons-material';
-import Toast from '@/lib/toast';
-import { createLevelAgency, deleteLevelAgency, fetchLevelAgency, updateLevelAgency } from '@/services/level_agency/_v1';
+import { useState } from "react";
+import { useSelector } from "react-redux";
+
 
 export default function LevelAgencyPage() {
+    const headers = ['STT', 'Cấp đại lý', 'Định mức', 'Tùy chọn'];
+    const companyId = useSelector((state: RootState) => state.auth.user?.companyId);
     const [open, setOpen] = useState(false);
-    const [levelAgencies , setLevelAgency] = useState<LevelAgency[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [editLevelAgancy, setEditLevelAgancy] = useState<LevelAgency | null>(null);
-    const handleOpen = () => setOpen(true);
-    const companyId = Number(sessionStorage.getItem('company_id'));
-
-    const handleAdd = async (newData: LevelAgency) => {
-        try {
-            console.log("Data: " + JSON.stringify(newData));
-            const newLevelAgency = await createLevelAgency(newData);
-            Toast.success("Thêm cấp đại lý thành công");
-
-            setLevelAgency((prevData) => [...prevData, newLevelAgency]);
-        } catch (err: unknown) {
-            const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
-            Toast.error(message);
-        }
-    };
-
-    const handleDelete = async (levelAgencyId: number) => {
-        try {
-            await deleteLevelAgency(levelAgencyId);
-            setLevelAgency((prevData) => prevData.filter(level => level.id !== levelAgencyId)); 
-            Toast.success('Xóa cấp đại lý thành công');
-        } catch (err: unknown) {
-            const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
-            Toast.error(message);
-        }
-    };
-    const handleEdit = (levelAgency: LevelAgency) => {
-        setEditLevelAgancy(levelAgency);
+    const [initialData, setInitialData] = useState<LevelAgencyData | null>(null);
+    const { levelAgency, loading, error, setLevelAgency } = useLevelAgency(companyId);
+    const handleOpen = () => {
+        setInitialData(null);
         setOpen(true);
     };
-    const handleClose = () => {
-        setOpen(false);
-        setEditLevelAgancy(null);
+    const handleEdit = (levelAgency: LevelAgencyData) => {
+        setInitialData(levelAgency);
+        setOpen(true);
     };
-    const handleUpdate = async (updatedData: LevelAgency) => {
-        try {
-            await updateLevelAgency(updatedData);
-            setLevelAgency((prevData) =>
-                prevData.map(level => (level.id === updatedData.id ? updatedData : level))
-            );
-            Toast.info('Cập nhật thành công');
-            handleClose();
-        } catch (err: unknown) {
-            const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
-            Toast.error(message);
-        };
-    }
-    useEffect(() => {
-        const loadLevelAgency = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const data = await fetchLevelAgency(companyId);
-                setLevelAgency(data);
-            } catch (error) {
-                setError((error as Error).message);
-            } finally {
-                setLoading(false);
+    const { handleSubmit } = useManageLevelAgency();
+    const handleFormSubmit = async (data: LevelAgencyData) => {
+        await handleSubmit(data, initialData ?? undefined, (levelAgency: LevelAgencyData) => {
+            if (initialData) {
+                setLevelAgency((prevData) =>
+                    prevData.map((o) => (o.id === levelAgency.id ? levelAgency : o))
+                );
+            } else {
+                setLevelAgency((prevData) => [...prevData, levelAgency]);
             }
-        };
-
-        if (companyId) {
-            loadLevelAgency();
+        });
+    };
+    const { handleDeleteLevelAgency } = useManageLevelAgency();
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa cấp đại lý này không?")) {
+            const success = await handleDeleteLevelAgency(id);
+            if (success) {
+                setLevelAgency((prevData) => prevData.filter(levelAgency => levelAgency.id !== id));
+            }
         }
-    }, [companyId]);
-
+    };
+    if (loading) return <><LoadingIndicator /></>;
+    if (error) return <div>{error}</div>;
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: 10 }}>
-                <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH CẤP ĐẠI LÝ</h3>
+        <div className="p-0">
+            <div className="flex justify-between items-center mb-2 p-2">
+                <span className="m-0 font-rounded font-semibold text-[20px]">DANH SÁCH CẤP ĐẠI LÝ</span>
                 <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
                     Thêm cấp mới
                 </Button>
             </div>
-
-            <LevelAgencyTable
-                levelAgency={levelAgencies}
-                loading={loading}
-                error={error}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-            />
-
-            <LevelAgencyModal
-                open={open}
-                onClose={handleClose}
-                companyId={companyId}
-                onAdd={handleAdd}
-                onUpdate={handleUpdate}
-                edit={editLevelAgancy}
-            />
+            <TableLevelAgency headers={headers} data={levelAgency} onEdit={handleEdit} onDelete={handleDelete} />
+            <ModalLevelAgency open={open} onClose={() => setOpen(false)} onSubmit={handleFormSubmit} initialData={initialData} />
         </div>
     );
 }
