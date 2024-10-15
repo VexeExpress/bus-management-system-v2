@@ -6,12 +6,11 @@ export interface UserData {
     username: string;
     role: number;
     status: boolean;
-
     address: string;
-    birth_date: string;
+    birthDate: string;
     email: string;
     cccd: string;
-    license_category: number;
-    expiration_date: string;
+    licenseCategory: number;
+    expirationDate: string;
     password: string;
 }

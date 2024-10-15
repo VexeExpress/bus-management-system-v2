@@ -24,13 +24,23 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
     const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<UserData>({
         mode: "onTouched",
     });
-
+    const isEditMode = !!initialData;
     useEffect(() => {
         if (open) {
             console.log("Modal opened. Initial data:", initialData);
             if (initialData) {
                 setValue('name', initialData.name || '');
                 setValue('email', initialData.email || '');
+                setValue('username', initialData.username || '');
+                setValue('status', initialData.status === true);
+                setValue('phone', initialData.phone || '');
+                setValue('licenseCategory', initialData.licenseCategory || 1);
+                setValue('gender', initialData.gender || 1);
+                setValue('expirationDate', initialData.expirationDate || '');
+                setValue('cccd', initialData.cccd || '');
+                setValue('birthDate', initialData.birthDate || '');
+                setValue('address', initialData.address || '');
+                setValue('role', initialData.role || 1);
             } else {
                 reset();
             }
@@ -63,17 +73,18 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
                             />
                             {errors.username && <p className="text-red-500 text-[13px]">{errors.username.message}</p>}
                         </div>
-
-                        <div className="flex-1 mx-2">
-                            <label htmlFor="email">Số điện thoại</label>
+                        <div className="flex-1 ml-2">
+                            <label htmlFor="name">Họ tên</label>
                             <input
-                                id="phone"
-                                {...register('phone', { required: "*Vui lòng nhập số điện thoại" })}
-                                type="phone"
+                                id="name"
+                                {...register('name', { required: "*Vui lòng nhập tên nhân viên" })}
+                                type="text"
                                 className="w-full p-2 mt-1 border border-gray-300 rounded"
                             />
-                            {errors.phone && <p className="text-red-500 text-[13px]">{errors.phone.message}</p>}
+                            {errors.name && <p className="text-red-500 text-[13px]">{errors.name.message}</p>}
                         </div>
+
+
 
                         <div className="flex-1 ml-2">
                             <label htmlFor="address">Địa chỉ</label>
@@ -87,17 +98,28 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
                         </div>
                     </div>
                     <div className="mb-4 flex justify-between">
-                        <div className="flex-1 mr-2">
-                            <label htmlFor="password">Mật khẩu</label>
+                        {!isEditMode && (
+                            <div className="flex-1 mr-2">
+                                <label htmlFor="password">Mật khẩu</label>
+                                <input
+                                    id="password"
+                                    {...register('password', { required: "*Vui lòng nhập mật khẩu" })}
+                                    type="text"
+                                    className="w-full p-2 mt-1 border border-gray-300 rounded"
+                                />
+                                {errors.password && <p className="text-red-500 text-[13px]">{errors.password.message}</p>}
+                            </div>
+                        )}
+                        <div className="flex-1 mx-2">
+                            <label htmlFor="email">Số điện thoại</label>
                             <input
-                                id="password"
-                                {...register('password', { required: "*Vui lòng nhập mật khẩu" })}
-                                type="text"
+                                id="phone"
+                                {...register('phone', { required: "*Vui lòng nhập số điện thoại" })}
+                                type="phone"
                                 className="w-full p-2 mt-1 border border-gray-300 rounded"
                             />
-                            {errors.password && <p className="text-red-500 text-[13px]">{errors.password.message}</p>}
+                            {errors.phone && <p className="text-red-500 text-[13px]">{errors.phone.message}</p>}
                         </div>
-
                         <div className="flex-1 mx-2">
                             <label htmlFor="email">Email</label>
                             <input
@@ -109,10 +131,10 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
                         </div>
 
                         <div className="flex-1 mx-2">
-                            <label htmlFor="birth_date">Ngày sinh</label>
+                            <label htmlFor="birthDate">Ngày sinh</label>
                             <input
-                                id="birth_date"
-                                {...register('birth_date')}
+                                id="birthDate"
+                                {...register('birthDate')}
                                 type="date"
                                 className="w-full p-2 mt-1 border border-gray-300 rounded"
                             />
@@ -126,18 +148,18 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
                                 {...register('status')}
                                 className="w-full p-2 mt-1 border border-gray-300 rounded"
                             >
-                                <option value="true">Hoạt động</option>
-                                <option value="false">Không hoạt động</option>
+                                <option value="true">Kích hoạt</option>
+                                <option value="false">Ngưng kích hoạt</option>
                             </select>
                             {errors.status && <p className="text-red-500 text-[13px]">{errors.status.message}</p>}
                         </div>
 
 
                         <div className="flex-1 ml-2">
-                            <label htmlFor="license_category">Chức vụ</label>
+                            <label htmlFor="role">Chức vụ</label>
                             <select
-                                id="license_category"
-                                {...register('license_category')}
+                                id="role"
+                                {...register('role')}
                                 className="w-full p-2 mt-1 border border-gray-300 rounded"
                             >
                                 <option value={1}>Tài xế</option>
@@ -147,17 +169,18 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
                         </div>
 
                         <div className="flex-1 ml-2">
-                            <label htmlFor="license_category">Hạng bằng lái</label>
+                            <label htmlFor="licenseCategory">Hạng bằng lái</label>
                             <select
-                                id="license_category"
-                                {...register('license_category')}
+                                id="licenseCategory"
+                                {...register('licenseCategory')}
                                 className="w-full p-2 mt-1 border border-gray-300 rounded"
                             >
-                                <option value={1}>Hạng B1</option>
-                                <option value={2}>Hạng B2</option>
-                                <option value={3}>Hạng C</option>
-                                <option value={4}>Hạng D</option>
-                                <option value={5}>Hạng E</option>
+                                <option value={1}>Chưa có</option>
+                                <option value={2}>Hạng B1</option>
+                                <option value={3}>Hạng B2</option>
+                                <option value={4}>Hạng C</option>
+                                <option value={5}>Hạng D</option>
+                                <option value={6}>Hạng E</option>
                             </select>
                         </div>
                     </div>
@@ -184,10 +207,10 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
                             />
                         </div>
                         <div className="flex-1 mx-2">
-                            <label htmlFor="expiration_date">Ngày hết hạn bằng lái</label>
+                            <label htmlFor="expirationDate">Ngày hết hạn bằng lái</label>
                             <input
-                                id="expiration_date"
-                                {...register('expiration_date')}
+                                id="expirationDate"
+                                {...register('expirationDate')}
                                 type="date"
                                 className="w-full p-2 mt-1 border border-gray-300 rounded"
                             />

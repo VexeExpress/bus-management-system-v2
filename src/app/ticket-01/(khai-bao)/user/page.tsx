@@ -1,5 +1,5 @@
 'use client';
-import { Button} from '@mui/material';
+import { Button } from '@mui/material';
 import * as React from 'react';
 import { Add } from '@mui/icons-material';
 import TableUser from '@/modules/user/components/TableUser';
@@ -11,6 +11,10 @@ import LoadingIndicator from '@/lib/loading';
 import useUsers from '@/modules/user/hook/useUsers';
 import { useDeleteUser } from '@/modules/user/hook/useDeleteUser';
 import ModalUser from '@/modules/user/components/ModalUser';
+import useManageUsers from '@/modules/user/hook/useManageUsers';
+import useLockUser from '@/modules/user/hook/useLockUser';
+import useChangePassword from '@/modules/user/hook/useChangePassword ';
+
 
 
 
@@ -20,8 +24,9 @@ export default function UserPage() {
     const [initialData, setInitialData] = useState<UserData | null>(null);
     const [open, setOpen] = useState(false);
     const { users, loading, error, setUsers } = useUsers(companyId);
-    const { handleSubmit } = useManageOffices();
-    
+    const { handleSubmit } = useManageUsers();
+    const { handleLockUser } = useLockUser();
+
     const handleOpen = () => {
         setInitialData(null);
         setOpen(true);
@@ -50,6 +55,14 @@ export default function UserPage() {
             }
         });
     };
+    const handleLock = async (id: number, status: boolean) => {
+        await handleLockUser({ id, status }, undefined, (updatedUser: UserData) => {
+            setUsers((prevData) =>
+                prevData.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+            );
+        });
+    };
+    const { handleChangePassword } = useChangePassword();
     if (loading) return <><LoadingIndicator /></>;
     if (error) return <div>{error}</div>;
     return (
@@ -60,7 +73,7 @@ export default function UserPage() {
                     Thêm nhân viên
                 </Button>
             </div>
-            <TableUser headers={headers} data={users} onEdit={handleEdit} onDelete={handleDelete}/>
+            <TableUser headers={headers} data={users} onEdit={handleEdit} onDelete={handleDelete} onLock={handleLock} onChangePass={handleChangePassword}/>
             <ModalUser open={open} onClose={() => setOpen(false)} onSubmit={handleFormSubmit} initialData={initialData} />
         </div>
 
