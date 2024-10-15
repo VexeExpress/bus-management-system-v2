@@ -16,7 +16,7 @@ const useManageUsers = () => {
             console.log("initialData: ", initialData);
             let user;
             if (initialData) {
-                user = await updateUser(initialData.id, data);
+                user = await updateUser(initialData.id, data, companyId);
                 console.log("Updated data:", user);
                 Toast.info("Cập nhật thông tin nhân viên thành công!");
             } else {
@@ -35,6 +35,9 @@ const useManageUsers = () => {
                 if (statusCode === 400) {
                     Toast.error("Tài khoản nhân viên đã tồn tại");
                     setError("Tài khoản nhân viên đã tồn tại");
+                } else if (statusCode === 404) {
+                    Toast.error("Tên tài khoản đã tồn tại");
+                    setError("Tên tài khoản đã tồn tại!");
                 } else if (statusCode === 500) {
                     Toast.error("Lỗi hệ thống. Vui lòng thử lại sau!");
                     setError("Lỗi hệ thống. Vui lòng thử lại sau!");

@@ -1,12 +1,18 @@
 import Toast from "@/lib/toast";
 import { useState } from "react";
 import { deleteUserById } from "../api/userAPI";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 export const useDeleteUser = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
+    const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
     const handleDeleteUser = async (id: number) => {
+        if (currentUserId === id) {
+            Toast.error("Bạn không thể xóa chính mình.");
+            return false;
+        }
         setLoading(true);
         setError(null);
         try {

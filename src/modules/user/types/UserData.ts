@@ -13,4 +13,5 @@ export interface UserData {
     licenseCategory: number;
     expirationDate: string;
     password: string;
+    companyId: number;
 }

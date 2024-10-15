@@ -22,16 +22,17 @@ export const createUser = async (companyId: number | undefined, data: UserData):
         if (!companyId) {
             throw new Error("Company ID is required.");
         }
-        const officeData = { ...data, companyId };
-        const response = await apiClient.post('/bms/user/create', officeData);
+        const userData = { ...data, companyId };
+        const response = await apiClient.post('/bms/user/create', userData);
         return response.data;
     } catch (error) {
         throw error;
     }
 };
-export const updateUser = async (id: number, data: UserData): Promise<UserData> => {
+export const updateUser = async (id: number, data: UserData, companyId: number | undefined): Promise<UserData> => {
     try {
-        const response = await apiClient.put(`/bms/user/update/${id}`, data);
+        const userData = { ...data, companyId };
+        const response = await apiClient.put(`/bms/user/update/${id}`, userData);
         return response.data;
     } catch (error) {
         throw error;

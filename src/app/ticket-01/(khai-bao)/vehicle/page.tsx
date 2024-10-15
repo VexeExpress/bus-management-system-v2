@@ -1,103 +1,65 @@
 'use client';
-import VehicleModal from "@/components/v5.5_vehicle/VehicleModal";
-import VehicleTable from "@/components/v5.5_vehicle/VehicleTable";
-import Toast from "@/lib/toast";
-import { fetchVehicle } from "@/services/vehicle/_v1";
-import { Vehicle } from "@/types/Vehicle";
+import LoadingIndicator from "@/lib/loading";
+import ModalVehicle from "@/modules/vehicle/components/ModalVehicle";
+import TableVehicle from "@/modules/vehicle/components/TableVehicle";
+import useManageVehicles from "@/modules/vehicle/hook/useManageVehicle";
+import useVehicles from "@/modules/vehicle/hook/useVehicles";
+import { VehicleData } from "@/modules/vehicle/types/VehicleData";
+import { RootState } from "@/redux/store";
 import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function VehiclePage() {
+    const headers = ['STT', 'Biển số xe', 'Điện thoại', 'Loại xe', 'Hạn đăng kiểm', 'Hãng xe', 'Màu xe', 'Tùy chọn'];
+    const companyId = useSelector((state: RootState) => state.auth.user?.companyId);
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [edit, setEdit] = useState<Vehicle | null>(null);
-    const [vehicle, setVehicle] = useState<Vehicle[]>([]);
-    const companyId = Number(sessionStorage.getItem('company_id'));
-
-    const handleDelete = async (vehicleId: number) => {
-        try {
-            await deleteVehicle(vehicleId);
-            setVehicle((prevVehicle) => prevVehicle.filter(vehicle => vehicle.id !== vehicleId));
-            Toast.success('Xóa tuyến thành công');
-        } catch (error) {
-            if (typeof error ==='string') {
-                console.log(error);
-                Toast.error(error);
-            } else if (error instanceof Error) {
-                console.log(error.message);
-                Toast.error(error.message);
-            }
-        }
-    }
-    const handleEdit = (vehicle: Vehicle) => {
-        setEdit(vehicle);
+    const [initialData, setInitialData] = useState<VehicleData | null>(null);
+    const { vehicles, loading, error, setVehicles } = useVehicles(companyId);
+    const handleOpen = () => {
+        setInitialData(null);
         setOpen(true);
-    }
-    const handleClose = () => {
-        setOpen(false);
-        setEdit(null);
     };
-    const handleAdd = async (newData: Vehicle) => {
-        try {
-            console.log("Data: " + JSON.stringify(newData));
-            const newVehicle = await createVehicle(newData);
-            Toast.success("Thêm phương thành công")
-            setVehicle((prevVehicle) => [...prevVehicle, newVehicle]);
-        } catch (err) {
-            if (typeof err === 'string') {
-                console.log(err);
-                Toast.error(err);
-            } else if (err instanceof Error) {
-                console.log(err.message);
-                Toast.error(err.message);
-            }
-        }
-    }
-    const handleUpdate = async (updatedData: Vehicle) => {
-        try {
-            await updatedVehicle(updatedData);
-            setVehicle((prevVehicle) =>
-                prevVehicle.map(vehicle => (vehicle.id === updatedData.id ? updatedData : vehicle))
-            );
-            Toast.info('Cập nhật thành công');
-            handleClose();
-        } catch (err) {
-            const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
-            Toast.error(message);
-        }
-    }
-    useEffect(() => {
-        const loadVehicle = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const data = await fetchVehicle(companyId);
-                setVehicle(data);
-                console.log("Data: " + JSON.stringify(data, null, 2));
+    const handleEdit = (office: VehicleData) => {
+        setInitialData(office);
+        setOpen(true);
+    };
 
-            } catch (err) {
-                setError((err as Error).message);
-            } finally {
-                setLoading(false);
+    const { handleSubmit } = useManageVehicles();
+    const handleFormSubmit = async (data: VehicleData) => {
+        await handleSubmit(data, initialData ?? undefined, (vehicle: VehicleData) => {
+            if (initialData) {
+                setVehicles((prevData) =>
+                    prevData.map((o) => (o.id === vehicle.id ? vehicle : o))
+                );
+            } else {
+                setVehicles((prevData) => [...prevData, vehicle]);
             }
-        };
-        if(companyId) {
-            loadVehicle();
+        });
+    };
+
+    const { handleDeleteVehicle } = useManageVehicles();
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa phương tiện này không?")) {
+            const success = await handleDeleteVehicle(id);
+            if (success) {
+                setVehicles((prevData) => prevData.filter(vehicle => vehicle.id !== id));
+            }
         }
-    }, [companyId]);
+    };
+    if (loading) return <><LoadingIndicator /></>;
+    if (error) return <div>{error}</div>;
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: 10 }}>
-                <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH PHƯƠNG TIỆN</h3>
+        <div className="p-0">
+            <div className="flex justify-between items-center mb-2 p-2">
+                <span className="m-0 font-rounded font-semibold text-[20px]">DANH SÁCH PHƯƠNG TIỆN</span>
                 <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-                    Thêm phương tiện mới
+                    Thêm phương tiện
                 </Button>
             </div>
-            <VehicleTable vehicle={vehicle} loading={loading} error={error} onDelete={handleDelete} onEdit={handleEdit} />
-            <VehicleModal open={open} onClose={handleClose} companyId={companyId} onAdd={handleAdd} onUpdate={handleUpdate} edit={edit}/>
+            <TableVehicle headers={headers} data={vehicles} onEdit={handleEdit} onDelete={handleDelete} />
+            <ModalVehicle open={open} onClose={() => setOpen(false)} onSubmit={handleFormSubmit} initialData={initialData} />
         </div>
     )
 }

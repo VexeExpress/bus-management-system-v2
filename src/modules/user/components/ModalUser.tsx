@@ -32,7 +32,7 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
                 setValue('name', initialData.name || '');
                 setValue('email', initialData.email || '');
                 setValue('username', initialData.username || '');
-                setValue('status', initialData.status === true);
+                setValue('status', initialData?.status === true);
                 setValue('phone', initialData.phone || '');
                 setValue('licenseCategory', initialData.licenseCategory || 1);
                 setValue('gender', initialData.gender || 1);
@@ -53,6 +53,7 @@ const ModalUser: React.FC<ModalUserProps> = ({ open, onClose, onSubmit, initialD
     };
     const onSubmitForm = (data: UserData) => {
         onSubmit(data, initialData ?? undefined);
+
         handleClose();
     };
     return (

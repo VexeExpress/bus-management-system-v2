@@ -22,8 +22,10 @@ import '@/styles/css/global.css'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PersistGate } from 'redux-persist/integration/react';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import store, { persistor, RootState } from '@/redux/store';
+import { logout } from '@/redux/authSlice';
+import { clearSelectedOffice } from '@/redux/officeSlice';
 const drawerWidth = 260;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -221,9 +223,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-
+    const dispatch = useDispatch();
     const handleLogout = () => {
-        sessionStorage.clear();
+        dispatch(logout());
+        dispatch(clearSelectedOffice());
         handleClose();
         router.push('/login');
 

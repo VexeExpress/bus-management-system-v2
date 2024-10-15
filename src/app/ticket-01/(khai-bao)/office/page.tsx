@@ -52,8 +52,8 @@ export default function OfficePage() {
             }
         });
     };
-    
-    
+
+
     if (loading) return <><LoadingIndicator /></>;
     if (error) return <div>{error}</div>;
     return (
