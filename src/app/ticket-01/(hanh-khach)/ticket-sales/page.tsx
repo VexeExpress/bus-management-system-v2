@@ -6,10 +6,10 @@ import '@/styles/css/global.css';
 import styles from "@/styles/module/TicketSales.module.css";
 import Calendar, { CalendarProps } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import ListTrip from '@/components/v1.1_ticket_sales/ListTrip';
+import ListTrip from '@/modules/trip/components/ListTrip';
 import { AddCircleOutline, AutoMode, ExpandMore } from '@mui/icons-material';
 import { fetchActiveRouters } from '@/services/route/_v1';
-import TripModal from '@/components/v1.1_ticket_sales/TripModal';
+import TripModal from '@/modules/trip/components/TripModal';
 import { Trip } from '@/types/Trip';
 import Toast from '@/lib/toast';
 import { createTrip, fetchTripDetails } from '@/services/trip/_v1';
@@ -21,23 +21,34 @@ import CargoOnBus from '@/components/v1.1_ticket_sales/Tab/CargoOnBus';
 import TripFinances from '@/components/v1.1_ticket_sales/Tab/TripFinances';
 import LoadingIndicator from '@/lib/loading';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import useRouteSelection from '@/modules/route/hook/useRouteSelection';
 export default function BanVe() {
+    const companyId = useSelector((state: RootState) => state.auth.user?.companyId);
+    const [showCalendar, setShowCalendar] = useState<boolean>(false);
+    const { route, loading, setRoute } = useRouteSelection(companyId);
     const [open, setOpen] = useState(false);
     const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
-    const [selectedRouteName, setSelectedRouteName] = useState<string>('');
-    const [routes, setRoutes] = useState([]);
     const [selectedDate, setValue] = useState<Date | null>(new Date());
+    const openModal = () => {
+        setOpen(true)
+    };
 
-    const [showCalendar, setShowCalendar] = useState<boolean>(false);
-    const companyId = Number(sessionStorage.getItem('company_id'));
+    
+    
+    const [selectedRouteName, setSelectedRouteName] = useState<string>('');
+    
+
+    
     const [edit, setEditTrip] = useState<Trip | null>(null);
 
     const formatDateToVietnamese = (date: Date): string => {
         const day = String(date.getDate()).padStart(2, '0');
 
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        return `${day}/${month}/${year}`; // Trả về định dạng dd/mm/yyyy
+        return `${day}/${month}/${year}`;
     };
     const handleDateChange: CalendarProps['onChange'] = (date) => {
         if (date instanceof Date) {
@@ -53,14 +64,7 @@ export default function BanVe() {
     };
 
     // modal add trip
-    const showModal = () => {
-        setOpen(true)
-    };
-
-    const handleClose = () => {
-        setOpen(false)
-        setEditTrip(null)
-    };
+    
 
 
     const [valueTab, setValueTab] = useState<string>('1');
@@ -75,17 +79,7 @@ export default function BanVe() {
         setItemSelected(true);
         setSelectedItemId(id);
     };
-    const fetchRoutes = async () => {
-        try {
-            const companyId = 1;
-            const data = await fetchActiveRouters(companyId);
-            setRoutes(data);
-            console.log("Router active: " + JSON.stringify(data));
 
-        } catch (error: any) {
-            console.error('Error fetching routes:', error.message);
-        }
-    };
     const handleAdd = async (newData: Trip) => {
         try {
             console.log("Data: " + JSON.stringify(newData));
@@ -106,16 +100,13 @@ export default function BanVe() {
             console.error('Error fetching trip details:', error);
         }
     };
-    useEffect(() => {
-
-
-        fetchRoutes();
-    }, []);
+   
     useEffect(() => {
         if (selectedItemId) {
             fetchTripDetailsById(selectedItemId);
         }
     }, [selectedItemId]);
+
 
     return (
         <>
@@ -163,18 +154,28 @@ export default function BanVe() {
                                 const selectedRouteId = e.target.value;
                                 setItemSelected(false);
                                 setSelectedRouteId(selectedRouteId);
-                                const selectedRoute = routes.find((route: any) => route.id === selectedRouteId);
+                                const selectedRoute = route.find((r: any) => r.id === selectedRouteId);
                                 if (selectedRoute) {
                                     setSelectedRouteName(selectedRoute.routeName);
                                 }
-                            }}>
-                            {routes.map((route: any) => (
-                                <MenuItem key={route.id} value={route.id}>
-                                    {route.routeName}
-                                </MenuItem>
-                            ))}
+                            }}
+                        >
+                            {loading ? (
+                                <div className='h-24'><LoadingIndicator /></div>
+                            ) : (
+                                route.length > 0 ? (
+                                    route.map((r, index) => (
+                                        <MenuItem key={index} value={r.id}>
+                                            {r.routeName}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <div className='h-24'><LoadingIndicator/></div>
+                                )
+                            )}
                         </Select>
                     </FormControl>
+
                 </div>
 
 
@@ -184,7 +185,7 @@ export default function BanVe() {
                 </div>
                 {selectedRouteId && (
                     <div style={{ marginRight: '10px', marginLeft: '-10px' }}>
-                        <Button startIcon={<AddCircleOutline />} variant="contained" style={{ textTransform: 'none', fontFamily: 'Rounded' }} onClick={showModal}>Tăng cường chuyến</Button>
+                        <Button startIcon={<AddCircleOutline />} variant="contained" style={{ textTransform: 'none', fontFamily: 'Rounded' }} onClick={openModal}>Tăng cường chuyến</Button>
                     </div>
                 )}
             </section>
@@ -282,15 +283,7 @@ export default function BanVe() {
                     </section>
                 </>
             )}
-            <TripModal
-                open={open}
-                onClose={handleClose}
-                edit={edit}
-                onAdd={handleAdd}
-                companyId={companyId}
-                selectedDate={selectedDate ?? new Date()}
-                selectedRouteId={selectedRouteId}
-                selectedRouteName={selectedRouteName}
+            <TripModal open={open} onClose={() => setOpen(false)} edit={edit} onAdd={handleAdd} companyId={companyId} selectedDate={selectedDate ?? new Date()} selectedRouteId={selectedRouteId} selectedRouteName={selectedRouteName}
             />
         </>
     );
