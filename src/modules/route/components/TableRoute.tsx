@@ -1,14 +1,14 @@
 import { IconButton } from "@mui/material";
-import { OfficeData } from "../types/OfficeData";
+import { RouteData } from "../types/RouteData";
 import { Delete, Mode } from "@mui/icons-material";
 
-interface TableOfficeProps {
+interface TableRouteProps {
     headers: string[];
-    data: OfficeData[];
-    onEdit: (office: OfficeData) => void;
+    data: RouteData[];
+    onEdit: (vehicle: RouteData) => void;
     onDelete: (id: number) => void;
 }
-const TableOffice: React.FC<TableOfficeProps> = ({ headers, data, onEdit, onDelete }) => {
+const TableRoute: React.FC<TableRouteProps> = ({ headers, data, onEdit, onDelete }) => {
     return (
         <table className="min-w-full ">
             <thead>
@@ -20,19 +20,23 @@ const TableOffice: React.FC<TableOfficeProps> = ({ headers, data, onEdit, onDele
             </thead>
             <tbody>
                 {Array.isArray(data) && data.length > 0 ? (
-                    data.map((office, index) => (
-                        <tr key={office.id}>
+                    data.map((route, index) => (
+                        <tr key={route.id}>
                             <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                            <td className="border border-gray-300 px-4 py-2">{office.name}</td>
-                            <td className="border border-gray-300 px-4 py-2">{office.code}</td>
-                            <td className="border border-gray-300 px-4 py-2">{office.phone}</td>
-                            <td className="border border-gray-300 px-4 py-2">{office.address}</td>
-                            <td className="border border-gray-300 px-4 py-2">{office.note}</td>
+                            <td className="border border-gray-300 px-4 py-2">{route.routeName}</td>
+                            <td className="border border-gray-300 px-4 py-2">{route.routeNameShort}</td>
                             <td className="border border-gray-300 px-4 py-2">
-                                <IconButton color="info" aria-label="Edit office" onClick={() => onEdit(office)}>
+                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(route.displayPrice)}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">{route.note}</td>
+                            <td className="border border-gray-300 px-4 py-2">{route.status}</td>
+
+
+                            <td className="border border-gray-300 px-4 py-2">
+                                <IconButton color="info" aria-label="Edit" title="Chỉnh sửa thông tin" onClick={() => onEdit(route)}>
                                     <Mode />
                                 </IconButton>
-                                <IconButton color="error" aria-label="Delete office" onClick={() => onDelete(office.id)}>
+                                <IconButton color="error" aria-label="Delete" title="Xóa tuyến" onClick={() => onDelete(route.id)}>
                                     <Delete />
                                 </IconButton>
                             </td>
@@ -49,4 +53,4 @@ const TableOffice: React.FC<TableOfficeProps> = ({ headers, data, onEdit, onDele
         </table>
     )
 }
-export default TableOffice;
+export default TableRoute;

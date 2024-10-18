@@ -22,35 +22,43 @@ const TableUser: React.FC<TableUserProps> = ({ headers, data, onEdit, onDelete, 
                 </tr>
             </thead>
             <tbody>
-                {data.map((user, index) => (
-                    <tr key={user.id}>
-                        <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                        <td className="border border-gray-300 px-4 py-2">{user.name}</td>
-                        <td className="border border-gray-300 px-4 py-2">{user.phone}</td>
-                        <td className="border border-gray-300 px-4 py-2">
-                            {user.gender === 1 ? 'Nam' : user.gender === 2 ? 'Nữ' : user.gender === 3 ? 'Khác' : 'Không xác định'}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">{user.username}</td>
-                        <td className="border border-gray-300 px-4 py-2">
-                            {user.role === 1 ? 'Tài xế' : user.role === 2 ? 'Nhân viên hành chính' : user.role === 3 ? 'Quản trị viên' : 'Không xác định'}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">{user.status ? 'Kích hoạt' : 'Ngưng kích hoạt'}</td>
-                        <td className="border border-gray-300 px-4 py-2">
-                            <IconButton color="success" title="Đặt lại mật khẩu mặc định '12345678'" onClick={() => onChangePass(user.id)}>
-                                <SyncLock />
-                            </IconButton>
-                            <IconButton color="warning" title="Khóa tài khoản" onClick={() => onLock(user.id, !user.status)}>
-                                <Lock />
-                            </IconButton>
-                            <IconButton color="info" aria-label="Edit office" title="Chỉnh sửa thông tin" onClick={() => onEdit(user)}>
-                                <Mode />
-                            </IconButton>
-                            <IconButton color="error" aria-label="Delete office" title="Xóa nhân viên" onClick={() => onDelete(user.id)}>
-                                <Delete />
-                            </IconButton>
+                {Array.isArray(data) && data.length > 0 ? (
+                    data.map((user, index) => (
+                        <tr key={user.id}>
+                            <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
+                            <td className="border border-gray-300 px-4 py-2">{user.name}</td>
+                            <td className="border border-gray-300 px-4 py-2">{user.phone}</td>
+                            <td className="border border-gray-300 px-4 py-2">
+                                {user.gender === 1 ? 'Nam' : user.gender === 2 ? 'Nữ' : user.gender === 3 ? 'Khác' : 'Không xác định'}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">{user.username}</td>
+                            <td className="border border-gray-300 px-4 py-2">
+                                {user.role === 1 ? 'Tài xế' : user.role === 2 ? 'Nhân viên hành chính' : user.role === 3 ? 'Quản trị viên' : 'Không xác định'}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">{user.status ? 'Kích hoạt' : 'Ngưng kích hoạt'}</td>
+                            <td className="border border-gray-300 px-4 py-2">
+                                <IconButton color="success" title="Đặt lại mật khẩu mặc định '12345678'" onClick={() => onChangePass(user.id)}>
+                                    <SyncLock />
+                                </IconButton>
+                                <IconButton color="warning" title="Khóa tài khoản" onClick={() => onLock(user.id, !user.status)}>
+                                    <Lock />
+                                </IconButton>
+                                <IconButton color="info" aria-label="Edit office" title="Chỉnh sửa thông tin" onClick={() => onEdit(user)}>
+                                    <Mode />
+                                </IconButton>
+                                <IconButton color="error" aria-label="Delete office" title="Xóa nhân viên" onClick={() => onDelete(user.id)}>
+                                    <Delete />
+                                </IconButton>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan={headers.length} className="text-center p-4">
+                            Không có dữ liệu
                         </td>
                     </tr>
-                ))}
+                )}
             </tbody>
         </table>
     )

@@ -1,103 +1,62 @@
 'use client';
-import RouteModal from "@/components/v5.3_route/RouteModal";
-import RouteTable from "@/components/v5.3_route/RouteTable";
-import Toast from "@/lib/toast";
-import { createRoute, deleteRouter, fetchRouter, updatedRouter } from "@/services/route/_v1";
-import { Route } from "@/types/Route";
+import LoadingIndicator from "@/lib/loading";
+import TableRoute from "@/modules/route/components/TableRoute";
+import useManageRoute from "@/modules/route/hook/useManageRoute";
+import useRoute from "@/modules/route/hook/useRoute";
+import { RouteData } from "@/modules/route/types/RouteData";
+import { RootState } from "@/redux/store";
 import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function RoutePage() {
+    const headers = ['STT', 'Tên tuyến', 'Tên tuyến rút gọn', 'Giá vé cơ bản', 'Ghi chú', 'Trạng thái', 'Tùy chọn'];
+    const companyId = useSelector((state: RootState) => state.auth.user?.companyId);
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [edit, setEdit] = useState<Route | null>(null);
-    const [router, setRouter] = useState<Route[]>([]);
-    const companyId = Number(sessionStorage.getItem('company_id'));
-
-    const handleDelete = async (routerId: number) => {
-        try {
-            await deleteRouter(routerId);
-            setRouter((prevRoutes) => prevRoutes.filter(route => route.id !== routerId)); 
-            Toast.success('Xóa tuyến thành công');
-        } catch (error) {
-            if (typeof error ==='string') {
-                console.log(error);
-                Toast.error(error);
-            } else if (error instanceof Error) {
-                console.log(error.message);
-                Toast.error(error.message);
-            }
-        }
-    }
-    const handleEdit = (route: Route) => {
-        setEdit(route);
+    const [initialData, setInitialData] = useState<RouteData | null>(null);
+    const { route, loading, error, setRoute } = useRoute(companyId);
+    const handleOpen = () => {
+        setInitialData(null);
         setOpen(true);
-    }
-    const handleClose = () => {
-        setOpen(false);
-        setEdit(null);
     };
-    const handleAdd = async (newData: Route) => {
-        try {
-            console.log("Data: " + JSON.stringify(newData));
-            const newRoute = await createRoute(newData);
-            Toast.success("Thêm tuyến thành công")
-            setRouter((prevRouter) => [...prevRouter, newRoute]);
-        } catch (err) {
-            if (typeof err === 'string') {
-                console.log(err);
-                Toast.error(err);
-            } else if (err instanceof Error) {
-                console.log(err.message);
-                Toast.error(err.message);
+    const handleEdit = (office: RouteData) => {
+        setInitialData(office);
+        setOpen(true);
+    };
+    const { handleSubmit } = useManageRoute();
+    const handleFormSubmit = async (data: RouteData) => {
+        await handleSubmit(data, initialData ?? undefined, (route: RouteData) => {
+            if (initialData) {
+                setRoute((prevData) =>
+                    prevData.map((o) => (o.id === route.id ? route : o))
+                );
+            } else {
+                setRoute((prevData) => [...prevData, route]);
             }
-        }
-    }
-    const handleUpdate = async (updatedData: Route) => {
-        try {
-            await updatedRouter(updatedData);
-            setRouter((prevRouter) =>
-                prevRouter.map(route => (route.id === updatedData.id ? updatedData : route))
-            );
-            Toast.info('Cập nhật thành công');
-            handleClose();
-        } catch (err) {
-            const message = typeof err === 'string' ? err : (err instanceof Error ? err.message : 'Unknown error');
-            Toast.error(message);
-        }
-    }
-    useEffect(() => {
-        const loadRoutes = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const data = await fetchRouter(companyId);
-                setRouter(data);
-                console.log("Data: " + JSON.stringify(data, null, 2));
+        });
+    };
 
-            } catch (err) {
-                setError((err as Error).message);
-            } finally {
-                setLoading(false);
+    const { handleDeleteRoute } = useManageRoute();
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa tuyến này không?")) {
+            const success = await handleDeleteRoute(id);
+            if (success) {
+                setRoute((prevData) => prevData.filter(route => route.id !== id));
             }
-        };
-        if(companyId) {
-            loadRoutes();
         }
-    }, [companyId]);
+    };
+    if (loading) return <><LoadingIndicator /></>;
+    if (error) return <div>{error}</div>;
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 , padding: 10}}>
-                <h3 style={{ margin: 0, fontFamily: 'Rounded' }}>DANH SÁCH TUYẾN</h3>
+        <div className="p-0">
+            <div className="flex justify-between items-center mb-2 p-2">
+                <span className="m-0 font-rounded font-semibold text-[20px]">DANH SÁCH TUYẾN</span>
                 <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-                    Tạo tuyến mới
+                    Thêm tuyến
                 </Button>
             </div>
-            <RouteTable routers={router} loading={loading} error={error} onDelete={handleDelete} onEdit={handleEdit} />
-            <RouteModal open={open} onClose={handleClose} companyId={companyId} onAdd={handleAdd} onUpdate={handleUpdate} edit={edit}/>
+            <TableRoute headers={headers} data={route} onEdit={handleEdit} onDelete={handleDelete} />
         </div>
     )
 }
