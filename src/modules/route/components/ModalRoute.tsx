@@ -28,7 +28,11 @@ const ModalRoute: React.FC<ModalRouteProps> = ({ open, onClose, onSubmit, initia
         if (open) {
             console.log("Modal opened. Initial data:", initialData);
             if (initialData) {
-
+                setValue('routeName', initialData.routeName || '')
+                setValue('routeNameShort', initialData.routeNameShort || '')
+                setValue('displayPrice', initialData.displayPrice || 0)
+                setValue('note', initialData.note || '')
+                setValue('status', initialData?.status === true)
             } else {
                 reset();
             }
@@ -49,64 +53,61 @@ const ModalRoute: React.FC<ModalRouteProps> = ({ open, onClose, onSubmit, initia
                     {initialData ? "Cập nhật thông tin tuyến" : "Thêm tuyến mới"}
                 </span>
                 <form onSubmit={handleSubmit(onSubmitForm)} className="mt-5">
-                   
-                        <div className="flex-1 mr-2">
-                            <label htmlFor="routeName">Tên tuyến</label>
-                            <input
-                                id="routeName"
-                                {...register('routeName', { required: "*Vui lòng nhập tên tuyến" })}
-                                type="text"
-                                className="w-full p-2 mt-1 border border-gray-300 rounded"
-                            />
-                            {errors.routeName && <p className="text-red-500 text-[13px]">{errors.routeName.message}</p>}
-                        </div>
-                        <div className="flex-1 ml-2">
-                            <label htmlFor="routeNameShort">Tên tuyến rút gọn</label>
-                            <input
-                                id="routeNameShort"
-                                {...register('routeNameShort')}
-                                type="text"
-                                className="w-full p-2 mt-1 border border-gray-300 rounded"
-                            />
-                            {errors.routeNameShort && <p className="text-red-500 text-[13px]">{errors.routeNameShort.message}</p>}
-                        </div>
-                        <div className="flex-1 ml-2">
-                            <label htmlFor="displayPrice">Giá cơ bản</label>
-                            <input
-                                id="displayPrice"
-                                {...register('displayPrice')}
-                                type="number"
-                                className="w-full p-2 mt-1 border border-gray-300 rounded"
-                            />
-                            {errors.displayPrice && <p className="text-red-500 text-[13px]">{errors.displayPrice.message}</p>}
-                        </div>
-                        <div className="flex-1 ml-2">
-                            <label htmlFor="note">Ghi chú</label>
-                            <input
-                                id="note"
-                                {...register('note')}
-                                type="number"
-                                className="w-full p-2 mt-1 border border-gray-300 rounded"
-                            />
-                            {errors.note && <p className="text-red-500 text-[13px]">{errors.note.message}</p>}
-                        </div>
-                        <div className="flex-1 ml-2">
-                            <label htmlFor="status">Trạng thái</label>
-                            <select
-                                id="status"
-                                {...register('status')}
-                                className="w-full p-2 mt-1 border border-gray-300 rounded"
-                            >
-                                <option value={1}>Ghế ngồi</option>
-                                <option value={2}>Ghế ngồi limousine</option>
-                                <option value={3}>Giường nằm</option>
-                                <option value={4}>Giường nằm limousine</option>
-                                <option value={5}>Phòng VIP (Cabin)</option>
-                            </select>
-                        </div>
-                        
-                 
-                    
+
+                    <div className="flex-1">
+                        <label htmlFor="routeName">Tên tuyến</label>
+                        <input
+                            id="routeName"
+                            {...register('routeName', { required: "*Vui lòng nhập tên tuyến" })}
+                            type="text"
+                            className="w-full p-2 mt-1 border border-gray-300 rounded"
+                        />
+                        {errors.routeName && <p className="text-red-500 text-[13px]">{errors.routeName.message}</p>}
+                    </div>
+                    <div className="flex-1 ">
+                        <label htmlFor="routeNameShort">Tên tuyến rút gọn</label>
+                        <input
+                            id="routeNameShort"
+                            {...register('routeNameShort', { required: "*Vui lòng nhập tên tuyến rút gọn" })}
+                            type="text"
+                            className="w-full p-2 mt-1 border border-gray-300 rounded"
+                        />
+                        {errors.routeNameShort && <p className="text-red-500 text-[13px]">{errors.routeNameShort.message}</p>}
+                    </div>
+                    <div className="flex-1">
+                        <label htmlFor="displayPrice">Giá cơ bản</label>
+                        <input
+                            id="displayPrice"
+                            {...register('displayPrice', { required: "*Vui lòng nhập giá cơ bản" })}
+                            type="number"
+                            className="w-full p-2 mt-1 border border-gray-300 rounded"
+                        />
+                        {errors.displayPrice && <p className="text-red-500 text-[13px]">{errors.displayPrice.message}</p>}
+                    </div>
+                    <div className="flex-1 ">
+                        <label htmlFor="note">Ghi chú</label>
+                        <input
+                            id="note"
+                            {...register('note')}
+                            type="text"
+                            className="w-full p-2 mt-1 border border-gray-300 rounded"
+                        />
+                    </div>
+                    <div className="flex-1 ">
+                        <label htmlFor="status">Trạng thái</label>
+                        <select
+                            id="status"
+                            {...register('status')}
+                            className="w-full p-2 mt-1 border border-gray-300 rounded"
+                        >
+                            <option value="true">Kích hoạt</option>
+                            <option value="false">Ngưng kích hoạt</option>
+                            
+                        </select>
+                    </div>
+
+
+
                     <div className="flex justify-end mt-4">
                         <Button sx={{ marginRight: 2 }} onClick={handleClose} variant="outlined" color="secondary">
                             Hủy

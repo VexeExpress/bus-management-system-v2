@@ -7,4 +7,5 @@ export interface AgencyData {
     email: string;
     createdAt: string;
     levelAgencyId: number;
+    levelAgencyName: string;
 }

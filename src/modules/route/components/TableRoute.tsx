@@ -29,7 +29,9 @@ const TableRoute: React.FC<TableRouteProps> = ({ headers, data, onEdit, onDelete
                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(route.displayPrice)}
                             </td>
                             <td className="border border-gray-300 px-4 py-2">{route.note}</td>
-                            <td className="border border-gray-300 px-4 py-2">{route.status}</td>
+                            <td className="border border-gray-300 px-4 py-2">
+                                {route.status ? 'Kích hoạt' : 'Ngưng kích hoạt'}
+                            </td>
 
 
                             <td className="border border-gray-300 px-4 py-2">

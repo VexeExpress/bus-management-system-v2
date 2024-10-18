@@ -1,5 +1,6 @@
 'use client';
 import LoadingIndicator from "@/lib/loading";
+import ModalRoute from "@/modules/route/components/ModalRoute";
 import TableRoute from "@/modules/route/components/TableRoute";
 import useManageRoute from "@/modules/route/hook/useManageRoute";
 import useRoute from "@/modules/route/hook/useRoute";
@@ -57,6 +58,7 @@ export default function RoutePage() {
                 </Button>
             </div>
             <TableRoute headers={headers} data={route} onEdit={handleEdit} onDelete={handleDelete} />
+            <ModalRoute open={open} onClose={() => setOpen(false)} onSubmit={handleFormSubmit} initialData={initialData} />
         </div>
     )
 }

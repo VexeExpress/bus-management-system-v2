@@ -1,14 +1,14 @@
 import Toast from "@/lib/toast";
 import { useEffect, useState } from "react";
-import { getListRouteDetailByCompanyId } from "../api/routeAPI";
+import { getListSeatMapDetailByCompanyId } from "../api/seatMapAPI";
 
-const useRoute = (companyId: number | undefined) => {
-    const [route, setRoute] = useState<any[]>([]);
+const useSeatMap = (companyId: number | undefined) => {
+    const [seatMap, setSeatMap] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchRoute = async () => {
+        const fetchSeatMap = async () => {
             if (!companyId) {
                 setLoading(false);
                 Toast.error("Lỗi tuy vấn dữ liệu công ty")
@@ -17,9 +17,9 @@ const useRoute = (companyId: number | undefined) => {
             setLoading(true);
             setError(null);
             try {
-                const data = await getListRouteDetailByCompanyId(companyId);
-                console.log(data);
-                setRoute(data);
+                const data = await getListSeatMapDetailByCompanyId(companyId);
+                console.log(data)
+                setSeatMap(data);
             } catch (error) {
                 Toast.error("Lỗi hệ thống");
                 setError((error as Error).message || "Đã xảy ra lỗi");
@@ -28,10 +28,10 @@ const useRoute = (companyId: number | undefined) => {
             }
         };
 
-        fetchRoute();
+        fetchSeatMap();
     }, [companyId]);
 
-    return { route, loading, error, setRoute };
+    return { seatMap, loading, error, setSeatMap };
 };
 
-export default useRoute;
+export default useSeatMap;
