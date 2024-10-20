@@ -9,6 +9,14 @@ export const getListRouteDetailByCompanyId = async (companyId: number): Promise<
         throw error;
     }
 };
+export const getListRouteNameActionByCompanyId = async (companyId: number): Promise<any> => {
+    try {
+        const response = await apiClient.get(`/bms/router/list-router-name-action/${companyId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
 export const getListRouteActionByCompanyId = async (companyId: number): Promise<any> => {
     try {
         const response = await apiClient.get(`/bms/router/list-router-action/${companyId}`);

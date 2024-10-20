@@ -1,14 +1,13 @@
 'use client';
-
 import { Trip } from "@/types/Trip";
-import { Box, Button, Chip, Grid, MenuItem, Modal, OutlinedInput, Select, SelectChangeEvent, TextField, Theme, Typography, useTheme } from "@mui/material";
+import { Box, MenuItem, Modal, Select, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import dayjs from 'dayjs';
-import { fetchListSeatMapName } from "@/services/seat_map/_v1";
 import React from "react";
-import { fetchListVehicleName } from "@/services/vehicle/_v1";
-import { fetchListNameUser } from "@/services/user/_v1";
-
+import useSeatMap from "@/modules/seat_map/hook/useSeatMap";
+import LoadingIndicator from "@/lib/loading";
+import useVehicles from "@/modules/vehicle/hook/useVehicles";
+import useUsers from "@/modules/user/hook/useUsers";
 const styleModal = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -19,70 +18,34 @@ const styleModal = {
     boxShadow: 24,
     p: 2,
 };
-
 interface TripModalProps {
     open: boolean;
     companyId: number;
     onClose: () => void;
     onAdd: (data: any) => void;
-    onUpdate: (data: any) => void;
     edit: Trip | null;
     selectedDate?: Date;
     selectedRouteId: number;
     selectedRouteName?: string;
 }
-
-
-
-const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, onUpdate, edit, selectedDate, selectedRouteId, selectedRouteName }) => {
-
-    console.log("CompanyID: " + companyId)
-    console.log("Select Date: " + selectedDate)
-    console.log("Select Route ID: " + selectedRouteId)
-    console.log("Select Route Name: " + selectedRouteName)
-
-    const [seatMaps, setSeatMaps] = useState<any[]>([]);
-    const [users, setUsers] = useState<any[]>([]);
-    const [vehicles, setVehicles] = useState<any[]>([]);
-
+const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, edit, selectedDate, selectedRouteId, selectedRouteName }) => {
     const [selectedVehicle, setSelectedVehicle] = useState<string>('');
     const [selectedUser, setSelectedUser] = useState<number[]>([]);
     const [selectedSeatMap, setSelectedSeatMap] = useState<string>('');
     const [selectedTime, setSelectedTime] = useState<string>('');
     const [selectedNote, setSelectedNote] = useState<string>('');
-
+    const { seatMapsName, loading: loadingSeatMaps } = useSeatMap(companyId);
+    const { vehicleName, loading: loadingVehicle } = useVehicles(companyId);
+    const { driverName, loading: loadingDriverName } = useUsers(companyId);
+    const isLoading = loadingSeatMaps || loadingVehicle || loadingDriverName;
     useEffect(() => {
-        const fetchAllData = async () => {
-            try {
-                const [seatMaps, users, vehicles] = await Promise.all([
-                    fetchListSeatMapName(companyId),
-                    fetchListNameUser(companyId),
-                    fetchListVehicleName(companyId)
-                ]);
-
-                setSeatMaps(seatMaps);
-                setUsers(users); // Updated to match the variable name
-                setVehicles(vehicles);
-
-                console.log("Map: " + JSON.stringify(seatMaps, null, 2));
-                console.log("User: " + JSON.stringify(users, null, 2)); // Updated to match the variable name
-                console.log("Vehicle: " + JSON.stringify(vehicles, null, 2));
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchAllData();
 
         if (edit) {
             // Logic for edit mode
         } else {
             // Logic for non-edit mode
         }
-
     }, [companyId, edit]);
-
-
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         const formattedDateTrip = dayjs(selectedDate).format('YYYY-MM-DD');
@@ -96,24 +59,23 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
             note: selectedNote,
             companyId: companyId,
         };
-        console.log("Submit: " + JSON.stringify(data, null, 2));
+        console.log(data);
+        try {
+            if (edit) {
+                // await onUpdate({ ...data, id: edit.id });
+            } else {
+                await onAdd(data);
+            }
+        } catch (error) {
+            console.error('Error submitting data:', error);
+        } finally {
 
-        if (edit) {
-            onUpdate({ ...data, id: edit.id });
-        } else {
-            onAdd(data);
+            onClose();
         }
-
-        onClose();
     };
     const formatDateForInput = (date: Date | undefined): string => {
         return date ? dayjs(date).format('DD-MM-YYYY') : '';
     };
-
-
-
-
-
     return (
         <Modal
             open={open}
@@ -121,18 +83,19 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={styleModal}>
-                <Typography style={{ fontFamily: 'Rounded', padding: '10px' }} variant="h6" component="h2" gutterBottom>
+            <Box sx={styleModal} className="p-6 rounded-lg shadow-lg bg-white">
+                <h2 className="font-semibold text-xl mb-4">
                     {edit ? 'CẬP NHẬT THÔNG TIN CHUYẾN' : 'THÊM CHUYẾN MỚI'}
-                </Typography>
-
+                </h2>
                 <form onSubmit={handleSubmit}>
-                    <div style={{ padding: '20px' }}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={4}>
-                                <span>Tuyến</span>
+                    <div className="space-y-6">
+                        <div className="flex flex-wrap -mx-3">
+                            <div className="w-full sm:w-1/3 px-3">
+                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                    Tuyến
+                                </label>
                                 <TextField
-                                    style={{ marginTop: 0 }}
+                                    className="mt-1 mb-3"
                                     margin="normal"
                                     required
                                     fullWidth
@@ -143,9 +106,11 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                                     value={selectedRouteName}
                                     InputProps={{ readOnly: true }}
                                 />
-                                <span>Sơ đồ ghế</span>
+                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                    Sơ đồ ghế
+                                </label>
                                 <Select
-                                    style={{ display: 'block' }}
+                                    className="block mt-1"
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     required
@@ -154,17 +119,27 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                                     value={selectedSeatMap}
                                     onChange={(e) => setSelectedSeatMap(e.target.value)}
                                 >
-                                    {seatMaps.map((seatMap: any) => (
-                                        <MenuItem key={seatMap.id} value={seatMap.id}>
-                                            {seatMap.seatMapName}
-                                        </MenuItem>
-                                    ))}
+                                    {isLoading ? (
+                                        <div className='h-24'><LoadingIndicator /></div>
+                                    ) : (
+                                        seatMapsName.length > 0 ? (
+                                            seatMapsName.map((seatMap, index) => (
+                                                <MenuItem key={index} value={seatMap.id}>
+                                                    {seatMap.seatMapName}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <div className='h-24'><LoadingIndicator /></div>
+                                        )
+                                    )}
                                 </Select>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <span>Ngày khởi hành</span>
+                            </div>
+                            <div className="w-full sm:w-1/3 px-3">
+                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                    Ngày khởi hành
+                                </label>
                                 <TextField
-                                    style={{ marginTop: 0 }}
+                                    className="mt-1 mb-3"
                                     margin="normal"
                                     required
                                     fullWidth
@@ -177,9 +152,11 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                                     }}
                                     disabled
                                 />
-                                <span>Xe</span>
+                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                    Xe
+                                </label>
                                 <Select
-                                    style={{ display: 'block' }}
+                                    className="block mt-1"
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     fullWidth
@@ -187,17 +164,27 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                                     value={selectedVehicle}
                                     onChange={(e) => setSelectedVehicle(e.target.value)}
                                 >
-                                    {vehicles.map((vehicle: any) => (
-                                        <MenuItem key={vehicle.id} value={vehicle.id}>
-                                            {vehicle.licensePlate}
-                                        </MenuItem>
-                                    ))}
+                                    {isLoading ? (
+                                        <div className='h-24'><LoadingIndicator /></div>
+                                    ) : (
+                                        vehicleName.length > 0 ? (
+                                            vehicleName.map((vehicle, index) => (
+                                                <MenuItem key={index} value={vehicle.id}>
+                                                    {vehicle.licensePlate}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <div className='h-24'><LoadingIndicator /></div>
+                                        )
+                                    )}
                                 </Select>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <span style={{ display: 'block' }}>Giờ khởi hành</span>
+                            </div>
+                            <div className="w-full sm:w-1/3 px-3">
+                                <label className="block text-sm font-medium leading-6 text-gray-900">
+                                    Giờ khởi hành
+                                </label>
                                 <TextField
-                                    style={{ marginTop: 0, width: '105px' }}
+                                    className="mt-1 mb-3"
                                     margin="normal"
                                     required
                                     name="time"
@@ -206,9 +193,11 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                                     value={selectedTime}
                                     onChange={(e) => setSelectedTime(e.target.value)}
                                 />
-                            </Grid>
-                        </Grid>
-                        <span style={{ display: 'block', marginTop: 10 }}>Tài xế</span>
+                            </div>
+                        </div>
+                        <label className="block text-sm font-medium leading-6 text-gray-900">
+                            Tài xế
+                        </label>
                         <Select
                             multiple
                             fullWidth
@@ -217,13 +206,24 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                             value={selectedUser}
                             onChange={(e) => setSelectedUser(e.target.value as number[])}
                         >
-                            {users.map((user) => (
-                                <MenuItem key={user.id} value={user.id}>
-                                    {user.name}
-                                </MenuItem>
-                            ))}
+                            {isLoading ? (
+                                <div className='h-24'><LoadingIndicator /></div>
+                            ) : (
+                                driverName.length > 0 ? (
+                                    driverName.map((d, index) => (
+                                        <MenuItem key={index} value={d.id}>
+                                            {d.name}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <div className='h-24'><LoadingIndicator /></div>
+                                )
+                            )}
                         </Select>
-                        <span style={{ display: 'block', marginTop: 10 }}>Ghi chú</span>
+
+                        <label className="block text-sm font-medium leading-6 text-gray-900">
+                            Ghi chú
+                        </label>
                         <TextField
                             id="outlined-multiline-flexible"
                             multiline
@@ -232,18 +232,17 @@ const TripModal: React.FC<TripModalProps> = ({ open, onClose, onAdd, companyId, 
                             maxRows={4}
                             value={selectedNote}
                             onChange={(e) => setSelectedNote(e.target.value)}
+                            className="mt-1 mb-3"
                         />
                     </div>
-
-
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2, marginBottom: 2, }}>
-                        <Button onClick={onClose} color="primary" variant="outlined" style={{ marginRight: 10 }}>
+                    <div className="flex justify-end mt-4">
+                        <button onClick={onClose} type="button" className="bg-transparent border border-blue-500 text-blue-500 rounded px-4 py-2 mr-2 hover:bg-blue-500 hover:text-white">
                             Hủy
-                        </Button>
-                        <Button type="submit" variant="contained" color="primary" style={{ marginRight: 20 }}>
+                        </button>
+                        <button type="submit" className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600">
                             {edit ? 'Cập nhật' : 'Thêm'}
-                        </Button>
-                    </Box>
+                        </button>
+                    </div>
                 </form>
             </Box>
         </Modal>

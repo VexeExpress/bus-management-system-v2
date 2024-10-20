@@ -5,7 +5,6 @@ import '@/styles/css/seatmap.css'
 import { Autocomplete, Button, Card, Chip, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Tooltip } from '@mui/material';
 import { Delete, Downloading, FileCopy, LocationOn, OpenWith, Restore } from '@mui/icons-material';
 import { fetchTicketData, } from '@/services/ticket/_v1';
-import { SeatMapData } from '../../../types/SeatMap';
 import LoadingIndicator from '@/lib/loading';
 import SockJS from 'sockjs-client';
 import { Client, IMessage } from '@stomp/stompjs';

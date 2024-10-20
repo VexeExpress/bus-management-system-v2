@@ -38,3 +38,11 @@ export const deleteSeatMapById = async (id: number): Promise<any> => {
         throw error;
     }
 };
+export const getListSeatMapNameByCompanyId = async (companyId: number): Promise<any> => {
+    try {
+        const response = await apiClient.get(`/bms/seat-map/list-seat-map-name/${companyId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

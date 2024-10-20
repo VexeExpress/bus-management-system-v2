@@ -38,3 +38,11 @@ export const deleteVehicleById = async (id: number): Promise<any> => {
         throw error;
     }
 };
+export const getListVehicleNameByCompanyId = async (companyId: number): Promise<any> => {
+    try {
+        const response = await apiClient.get(`/bms/vehicle/list-vehicle-name/${companyId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

@@ -1,84 +1,62 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import styles from '@/styles/module/TicketSales.module.css'
-import { AddCircleOutline } from "@mui/icons-material";
 import LoadingIndicator from "@/lib/loading";
-import { fetchTrip } from "@/services/trip/_v1";
 import dayjs from "dayjs";
-
-
+import useListTrip from "../hook/useListTrip";
+import { TripData } from "../types/TripData";
 interface ListTripProps {
     companyId: number;
-    selectedDate: string;
+    selectedDate: Date;
     selectedRouteId: number;
     onItemSelect: (id: number) => void;
+    setTripAdded: (value: boolean) => void; 
+    tripAdded: boolean;
 }
-
-const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRouteId, onItemSelect }) => {
-    const [trips, setTrips] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRouteId, onItemSelect, setTripAdded, tripAdded  }) => {
     const formattedDateTrip = dayjs(selectedDate).format('YYYY-MM-DD');
-    // console.log('companyId: ', companyId);
-    // console.log('selectedRouteId: ', selectedRouteId);
-    // console.log('selectedDate: ', formattedDateTrip);
-
-    const fetchTrips = async () => {
-        setLoading(true);
-        try {
-            const data = await fetchTrip(companyId, formattedDateTrip, selectedRouteId);
-            console.log("Data Trip: ", data);
-
-            setTrips(data);
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { trips, loading, error, refetch } = useListTrip(companyId, formattedDateTrip, selectedRouteId);
     useEffect(() => {
-
-
-        fetchTrips();
-    }, [companyId, formattedDateTrip, selectedRouteId]);
-
-    const handleItemClick = (id: number) => {
-        console.log('Selected trip ID:', id);
-    };
-
-
+        if (tripAdded) {
+            refetch(); 
+            setTripAdded(false); // Reset lại tripAdded sau khi refetch
+        }
+    }, [tripAdded, refetch, setTripAdded]);
     if (loading) return <div><LoadingIndicator /></div>;
-
+    if (error) return <div><LoadingIndicator /></div>;
     return (
         <>
-            <div className={styles.containerListTrip}>
+            <div className="grid grid-cols-7 gap-1 mt-0 px-2">
                 {Array.isArray(trips) && trips.length > 0 ? (
                     trips
                         .sort((a, b) => {
-                            // Sắp xếp các chuyến dựa trên chuỗi thời gian 'HH:mm:ss'
-                            return a.time.localeCompare(b.time); // So sánh chuỗi thời gian để sắp xếp
+                            return a.time.localeCompare(b.time);
                         })
                         .map((trip, index) => (
-                            <div key={index} className={styles.tripShowMode}>
-                                <div className={styles.trip} onClick={() => onItemSelect(trip.id)}>
-                                    <div className={styles.proccessBar}>
-                                        <div className={styles.proccessBarContent}>
-                                            {/* Chỉ hiển thị giờ và phút, cắt bỏ giây */}
-                                            <span className={styles.time}>{trip.time.slice(0, 5)}</span>
-                                            <span className={styles.tickets}>24/36</span>
+                            <div key={index} className="grid grid-cols-auto-fit min-w-[160px] gap-2 p-1 w-full">
+                                <div className="bg-white flex flex-col border border-gray-400 rounded-md justify-between relative min-w-[160px] shadow-md cursor-pointer" onClick={() => onItemSelect(trip.id)}>
+                                    <div className="w-full bg-gray-200 h-[33px] rounded-t-md relative">
+                                        <div className="flex justify-between w-full">
+                                            <span className="ml-1 font-bold text-lg text-left">{trip.time.slice(0, 5)}</span>
+                                            <span className="mr-1 font-bold text-lg text-right">24/36</span>
                                         </div>
-                                        <div className={styles.proccessBarFill}></div>
+                                        <div className="absolute top-0 left-0 h-full bg-green-500 z-[-1] w-[50%]"></div>
                                     </div>
-                                    <div className={styles.driver}>
+                                    <div className="flex flex-wrap flex-col font-medium text-sm leading-none text-[#232731]">
                                         <p>
-                                            {/* Hiển thị tên tài xế, cách nhau bằng dấu phẩy */}
                                             <span>T: {trip.user ? trip.user.join(', ') : ''}</span>
                                         </p>
                                     </div>
-                                    <div className={styles.vehicle}>
-                                        <span>{trip.seatMapName} ({trip.licensePlate})</span>
+                                    <div className="flex flex-col items-end px-1">
+                                        <span className="font-medium text-base leading-5 tracking-tighter text-[#383f47] whitespace-nowrap">
+                                            {trip.licensePlate}
+                                        </span>
+                                        <span className="font-medium text-base leading-5 tracking-tighter text-[#383f47] whitespace-nowrap">
+                                            {trip.seatMapName}
+                                        </span>
                                     </div>
+
+
                                 </div>
                             </div>
                         ))
@@ -88,9 +66,7 @@ const ListTrip: React.FC<ListTripProps> = ({ companyId, selectedDate, selectedRo
                     </div>
                 )}
             </div>
-
         </>
     );
 };
-
 export default ListTrip;
