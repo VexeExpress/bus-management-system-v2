@@ -12,6 +12,9 @@ module.exports = {
       fontFamily: {
         rounded: ['Rounded', 'sans-serif'],
       },
+      colors: {
+        customBlue: '#0072bc',
+    },
     },
   },
   plugins: [],

@@ -11,7 +11,7 @@ import { AddCircleOutline, AutoMode, ExpandMore } from '@mui/icons-material';
 import TripModal from '@/modules/trip/components/TripModal';
 import { fetchTripDetails } from '@/services/trip/_v1';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import SeatMap from '@/modules/seat_map/components/TabSeatMap';
+import TabSeatMap from '@/modules/seat_map/components/TabSeatMap';
 import TicketList from '@/components/v1.1_ticket_sales/Tab/TicketList';
 import CustomerTransfer from '@/components/v1.1_ticket_sales/Tab/CustomerTransfer';
 import CargoOnBus from '@/components/v1.1_ticket_sales/Tab/CargoOnBus';
@@ -246,7 +246,7 @@ export default function BanVe() {
                                 </TabList>
                             </Box>
                             <TabPanel value="1">
-                                <SeatMap selectedItemId={selectedItemId} />
+                                <TabSeatMap selectedItemId={selectedItemId} />
                             </TabPanel>
                             <TabPanel value="2">
                                 <TicketList />

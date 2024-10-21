@@ -8,87 +8,41 @@ import { fetchTicketData, } from '@/services/ticket/_v1';
 import LoadingIndicator from '@/lib/loading';
 import SockJS from 'sockjs-client';
 import { Client, IMessage } from '@stomp/stompjs';
+import useTicketData from '@/modules/ticket/hook/useTicketData ';
+import { TicketData } from '@/modules/ticket/types/TicketData';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 
-interface Ticket {
-    id: number;
-    seat: {
-        id: number;
-        floor: number;
-        row: number;
-        seatColumn: number;
-        name: string;
-        status: boolean;
-        seatMap: {
-            id: number;
-            row: number;
-            seatColumn: number;
-            floor: number;
-        }
-    }
-}
 interface SeatMapProps {
     selectedItemId: number | null;
 }
 
-const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
-    const [seatMapId, setSeatMapId] = useState<number | null>(null);
-    const [ticketData, setTicketData] = useState<any>(null);
-    const [seatMapData, setSeatMapData] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-    const [selectedSeat, setSelectedSeat] = useState<any>(null);
-    const [selectedItem, setSelectedItem] = useState<number | null>(null);
-
-
-    const getSeatMapId = async () => {
-        try {
-            if (!selectedItemId) return;
-            setLoading(true);
-            const id = await fetchSeatMapId(selectedItemId);
-            console.log("Seat Map ID: " + id);
-            setSeatMapId(id);
-            await getSeatMapData(id);
-        } catch (err) {
-            setError('Không thể tải ID sơ đồ ghế.');
-        } finally {
-            setLoading(false);
-        }
-    };
-    const getSeatMapData = async (id: number) => {
-        try {
-            const data = await fetchSeatMapById(id);
-            setSeatMapData(data);
-            console.log("Seat Map Data: " + JSON.stringify(data, null, 2));
-        } catch (err) {
-            setError('Không thể tải sơ đồ ghế.');
-        }
-    };
-    const getTicketData = async () => {
-        try {
-            if (!selectedItemId) return;
-            setLoading(true);
-            const data = await fetchTicketData(selectedItemId);
-            // console.log("Ticket Data: " + JSON.stringify(data, null, 2));
-            setTicketData(data);
-        } catch (err) {
-            setError('Không thể tải sơ đồ ghế.');
-            setTicketData([]);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        getTicketData();
-    }, [selectedItemId]);
-
-
-    const [selectedTicket, setSelectedTicket] = useState<number[]>([]);
-    const [showSelectedSeatInfo, setShowSelectedSeatInfo] = useState(false);
+const TabSeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
+    const { ticketData } = useTicketData(selectedItemId);
 
     const [client, setClient] = useState<Client | null>(null);
+    
     const [connected, setConnected] = useState(false);
+    const [selectedTicket, setSelectedTicket] = useState<number[]>([]);
+
+    const clientId = useRef(Date.now());
+   
+
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedSeat, setSelectedSeat] = useState<any>(null);
+
+
+
+
+
+
+    const [showSelectedSeatInfo, setShowSelectedSeatInfo] = useState(false);
+
+    const userId = useSelector((state: RootState) => state.auth.user?.id);
+    const username = useSelector((state: RootState) => state.auth.user?.name);
+    const [selectedUsernamesWS, setSelectedUsernamesWS] = useState<{ [key: number]: string }>({});
     useEffect(() => {
         // Khởi tạo kết nối STOMP client
         const socket = new SockJS('http://localhost:8080/ws');
@@ -102,21 +56,31 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
                 stompClient.subscribe('/topic/item-updates', (message: IMessage) => {
                     const itemUpdate = JSON.parse(message.body);
                     console.log('Received message:', message.body);
+                    const { itemId, status, username, userId: updateUserId } = itemUpdate;
 
-                    if (itemUpdate.status === 'selected') {
-                        console.log(`Ghế ${itemUpdate.itemId} đã được chọn.`);
-                        // Nếu cần, có thể cập nhật UI để thông báo cho người dùng
-                    } else {
-                        console.log(`Ghế ${itemUpdate.itemId} đã bị bỏ chọn.`);
-                    }
+                    if (updateUserId !== userId) {
+                        setSelectedUsernamesWS((prev) => ({
+                            ...prev,
+                            [itemId]: username, // Gán tên người dùng vào ghế
+                        }));
 
-                    // Chỉ cập nhật nếu clientId khớp
-                    if (itemUpdate.clientId !== clientId.current) {
                         setSelectedTicket((prev) => {
-                            const newSelected = itemUpdate.status === 'selected'
-                                ? [...prev, itemUpdate.itemId] // Thêm ghế được chọn
-                                : prev.filter(id => id !== itemUpdate.itemId); // Bỏ ghế được bỏ chọn
-                            return newSelected;
+                            const isSelected = itemUpdate.status;
+
+                            if (isSelected) {
+                                // Thêm ghế vào danh sách đã chọn nếu chưa được chọn
+                                if (!prev.includes(itemId)) {
+                                    console.log("Seat added:", itemId);
+                                    return [...prev, itemId];
+                                }
+                                console.log("Seat already selected:", itemId);
+                                return prev; // Không thay đổi nếu ghế đã được chọn
+                            } else {
+                                // Bỏ ghế ra khỏi danh sách đã chọn nếu không còn được chọn
+                                const newSelected = prev.filter(id => id !== itemId);
+                                console.log("Seat removed:", itemId);
+                                return newSelected;
+                            }
                         });
                     }
                 });
@@ -137,98 +101,74 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
 
         return () => {
             stompClient.deactivate();
+            console.log("WebSocket client deactivated");
         };
     }, []);
-    const clientId = useRef(Date.now());
-    const sendMessage = (itemId: number, status: string) => {
+
+    const sendMessage = (itemId: number, status: boolean, username: string, userId: number) => {
         if (client && connected) {
             client.publish({
                 destination: '/app/send',
-                body: JSON.stringify({ itemId, status, clientId: clientId.current }), // Thêm clientId
+                body: JSON.stringify({ itemId,  status, username, userId }),
             });
         }
     };
 
 
-
-
-
-
-
-
-
-    const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
+    
     useEffect(() => {
-        console.log("Các ID đã chọn: ", selectedSeatIds);
-    }, [selectedSeatIds]);
+        console.log("Ghế đang được chọn tại client:", selectedTicket);
+    }, [selectedTicket]);
+
     const renderSeats = () => {
         const seatsByFloor: Record<number, Array<Array<any>>> = {};
         const seatMap = ticketData[0]?.seat?.seatMap || {};
-
-        ticketData.forEach((ticket: Ticket) => {
+        
+        ticketData.forEach((ticket: TicketData) => {
             const { id, seat } = ticket;
             if (seat) {
-                const { floor, row, seatColumn, name, status } = seat;
+                const { floor, row, seatColumn, name, status } = seat; // Assume status is a boolean
                 if (!seatsByFloor[floor]) {
-                    seatsByFloor[floor] = Array.from({ length: seatMap.row }, () => Array(seatMap.seatColumn).fill(null));
+                    seatsByFloor[floor] = Array.from(
+                        { length: seatMap.row },
+                        () => Array(seatMap.seatColumn).fill(null)
+                    );
                 }
-                seatsByFloor[floor][row - 1][seatColumn - 1] = {
-                    id,
-                    name,
-                    status,
-                    ticket,
-                };
+                seatsByFloor[floor][row - 1][seatColumn - 1] = { id, name, status, ticket };
             }
         });
 
         return Object.entries(seatsByFloor).map(([floor, rows]) => (
-            <div className="seat-row" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="flex flex-col w-full" >
                 {rows.map((row: any[], rowIndex: React.Key | null | undefined) => (
                     <div key={rowIndex} className="seat-row">
                         {row.map((seat, colIndex) => {
-                            const isSelected = seat && selectedTicket.includes(seat.id); // Check if seat is selected
+                            const isSelected = seat && selectedTicket.includes(seat.id);
                             return (
-                                <Card
-                                    key={colIndex}
-                                    variant="outlined"
-                                    className={`seat ${seat ? (isSelected ? 'selected' : (seat.status ? 'available' : 'booked')) : 'empty'}`}
-                                    style={{
-                                        flex: '1',
-                                        height: 'auto',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'flex-start',
-                                        position: 'relative',
-                                        cursor: seat ? 'pointer' : 'default',
-                                    }}
-                                    onClick={async () => {
-                                        if (seat) {
-                                            const seatId = seat.id;
-                                            const isSelected = selectedTicket.includes(seatId);
-                                            console.log("Selected Seat ID: ", seatId);
-                                            setSelectedSeatIds(prevIds => {
-                                                // If the seat is already selected, remove it. Otherwise, add it.
-                                                return isSelected
-                                                    ? prevIds.filter(id => id !== seatId)
-                                                    : [...prevIds, seatId];
-                                            });
-                                            setSelectedTicket(prevIds => {
-                                                // If already selected, remove the seat ID, otherwise add it
-                                                return isSelected
-                                                    ? prevIds.filter(id => id !== seatId)
-                                                    : [...prevIds, seatId];
-                                            });
-                                            setSelectedSeat({
-                                                ...seat,
-                                                ticketId: seatId,
-                                                ticketData: seat.ticket,
-                                            });
-                                            setShowSelectedSeatInfo(!isSelected);
-                                            sendMessage(seatId, !isSelected ? 'selected' : 'deselected');
-                                        }
-                                    }}
+                                <div key={colIndex}
+                                    className={`${seat ? 
+                                        (isSelected ? 'border-2 border-[#0072bc] rounded' : 
+                                        (seat.status ? 'border border-[#a7a8a8] border-opacity-12 rounded ' : 'border-2 border-red-500')) 
+                                        : 'border-2 border-gray-300'} 
+                                        flex flex-col justify-between  relative cursor-pointer m-1 p-2 transition-colors duration-300 w-full`}
+                                    
+                                        onClick={() => {
+                                            if (seat) {
+                                                const seatId = seat.id;
+                                                const isSeatSelected = selectedTicket.includes(seatId);
+                                                
+                                                // const isSelected = selectedTicket.includes(seatId);
+                                                console.log(`Seat ID: ${seatId}, isSelected: ${isSelected}, seat.status: ${seat.status}`);
+                                                setShowSelectedSeatInfo(!isSelected);
+                                                sendMessage(seatId, !isSelected, username!, userId!);
+                                                setSelectedTicket((prev) => 
+                                                    isSeatSelected ? prev.filter(id => id !== seatId) : [...prev, seatId]
+                                                );
+
+                                            }
+                                        }}
                                 >
+                                    {isSelected && <span className="text-sm text-gray-500">{selectedUsernamesWS[seat.id]}</span>}
                                     <div className="seat-info" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
                                         <span className="seat-name" style={{ fontWeight: 'bold', marginRight: '10px' }}>
                                             {seat ? seat.name : 'X'}
@@ -263,7 +203,7 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
                                     <div>
                                         <span style={{ fontSize: '13px', color: 'black' }}>B: Đặng Tuấn Thành/ VP An Sương</span>
                                     </div>
-                                </Card>
+                                </div>
                             );
                         })}
                     </div>
@@ -451,7 +391,7 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
         <>
 
 
-            <div>Sơ đồ ghế, selected item ID: {selectedItemId}</div>
+            <div>selected item ID: {selectedItemId}</div>
 
             <div>
                 {loading && <><LoadingIndicator /></>}
@@ -470,4 +410,4 @@ const SeatMap: React.FC<SeatMapProps> = ({ selectedItemId }) => {
         </>
     );
 };
-export default SeatMap;
+export default TabSeatMap;
